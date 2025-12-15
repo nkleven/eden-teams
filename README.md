@@ -136,6 +136,12 @@ These Entra ID users are reserved for Charlie’s roadshow so the OOBE feels rea
 
 Accounts live in the demo tenant, have `User.Read` + required app access, and can be reset anytime via the Entra portal. Update this table if passwords change so the OOBE guide stays accurate.
 
+##### End-user flow after first run (2025‑12‑15T23:07:28.421Z)
+
+1. **Sign in** – Charlie (or the kids) opens `https://eden-teams.kellzkreations.com`, signs in with one of the demo accounts above, and immediately sees the Home screen hero (“Ask about Teams calls…” plus example chips).
+2. **Ask & view** – They click/enter a question (e.g., “Show me calls from last week”), hit **Ask**, and the UI returns a friendly summary card first (“You had 4 calls; 1 looked rough”) with a “See details” button revealing the table.
+3. **Explore & wrap** – Optional: jump to **Call Explorer** for filters/timeline, then **Admin** to see health badges (“Managed identity ✅, Key Vault ✅”). Use the **Reset**/Back buttons to start over or swap users without refreshing.
+
 #### React SPA scaffolding (shared core)
 
 ```bash
