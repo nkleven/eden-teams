@@ -109,7 +109,7 @@ const CallExplorerPage = () => {
             </TableRow>
           </TableBody>
         </Table>
-        <Text size={200} tone="secondary" style={{ padding: "12px" }}>
+        <Text size={200} style={{ padding: "12px" }}>
           Hook the table up to eden-api once the timeline endpoint is available.
         </Text>
       </Card>

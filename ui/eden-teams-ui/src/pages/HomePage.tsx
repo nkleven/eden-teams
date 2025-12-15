@@ -10,6 +10,8 @@ import {
   Spinner,
   Subtitle2,
   Text,
+  Toast,
+  ToastTitle,
   useToastController
 } from "@fluentui/react-components";
 import { DatePicker } from "@fluentui/react-datepicker-compat";
@@ -56,7 +58,9 @@ const HomePage = ({ toasterId }: HomePageProps) => {
   const handleSubmit = async () => {
     if (!question.trim()) {
       dispatchToast(
-        { intent: "warning", content: "Please enter a question." },
+        <Toast appearance="warning">
+          <ToastTitle>Please enter a question.</ToastTitle>
+        </Toast>,
         { position: "top-end" }
       );
       return;
@@ -72,10 +76,11 @@ const HomePage = ({ toasterId }: HomePageProps) => {
       setAnswer(response.answer);
     } catch (error) {
       dispatchToast(
-        {
-          intent: "error",
-          content: (error as Error)?.message ?? "Failed to query call records."
-        },
+        <Toast appearance="danger">
+          <ToastTitle>
+            {(error as Error)?.message ?? "Failed to query call records."}
+          </ToastTitle>
+        </Toast>,
         { position: "top-end" }
       );
     } finally {
@@ -110,11 +115,17 @@ const HomePage = ({ toasterId }: HomePageProps) => {
           <div style={{ display: "flex", gap: "12px" }}>
             <div>
               <Label>Start date</Label>
-              <DatePicker value={startDate} onSelectDate={setStartDate} />
+              <DatePicker
+                value={startDate}
+                onSelectDate={(date) => setStartDate(date ?? undefined)}
+              />
             </div>
             <div>
               <Label>End date</Label>
-              <DatePicker value={endDate} onSelectDate={setEndDate} />
+              <DatePicker
+                value={endDate}
+                onSelectDate={(date) => setEndDate(date ?? undefined)}
+              />
             </div>
           </div>
           <Button appearance="primary" onClick={handleSubmit} disabled={loading}>
@@ -137,7 +148,7 @@ const HomePage = ({ toasterId }: HomePageProps) => {
           )}
           {!loading && !answer && (
             <div style={{ padding: "16px" }}>
-              <Text size={200} tone="secondary">
+              <Text size={200}>
                 Results will appear here after you submit a question.
               </Text>
             </div>
