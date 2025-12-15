@@ -124,6 +124,18 @@ We are building a shared React + Fluent UI experience that can ship both as a st
 2. **Portal binding**: Azure Portal → Container Apps → `eden-api` → Custom domains → remove stale entries → **Add custom domain**, enter `eden-teams.kellzkreations.com`, select **Managed certificate**, follow any TXT verification, and wait for “Healthy” + `bindingType: SniEnabled`.
 3. **Smoke**: `nslookup eden-teams.kellzkreations.com` (should point to the Container App FQDN) and `curl -I https://eden-teams.kellzkreations.com` (should match the direct FQDN instead of `ERR_CONNECTION_RESET`).
 
+##### Demo / test users (2025‑12‑15T23:05:48.304Z)
+
+These Entra ID users are reserved for Charlie’s roadshow so the OOBE feels real without touching production accounts:
+
+| Name          | UPN / Email                           | Password | Notes |
+|---------------|---------------------------------------|----------|-------|
+| Alice Rivers  | alice.rivers@contoso.onmicrosoft.com  | Alice!2025 | Sales manager persona (USA) |
+| Bob Nguyen    | bob.nguyen@contoso.onmicrosoft.com    | Bob!2025   | Support lead persona (APAC) |
+| Charlie Kelly | charlie.kelly@contoso.onmicrosoft.com | Charlie!2025 | Executive demo persona |
+
+Accounts live in the demo tenant, have `User.Read` + required app access, and can be reset anytime via the Entra portal. Update this table if passwords change so the OOBE guide stays accurate.
+
 #### React SPA scaffolding (shared core)
 
 ```bash
