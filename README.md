@@ -142,6 +142,25 @@ Accounts live in the demo tenant, have `User.Read` + required app access, and ca
 2. **Ask & view** – They click/enter a question (e.g., “Show me calls from last week”), hit **Ask**, and the UI returns a friendly summary card first (“You had 4 calls; 1 looked rough”) with a “See details” button revealing the table.
 3. **Explore & wrap** – Optional: jump to **Call Explorer** for filters/timeline, then **Admin** to see health badges (“Managed identity ✅, Key Vault ✅”). Use the **Reset**/Back buttons to start over or swap users without refreshing.
 
+##### First-run quick start (2025‑12‑15T23:12:28.182Z)
+
+```powershell
+# 1. Backend OOBE (shows banner + config warnings)
+cd C:\Insider-Source\eden-teams.worktrees\worktree-2025-12-15T17-24-43
+.venv\Scripts\activate
+python -m eden_teams.main
+
+# 2. UI OOBE (local)
+cd C:\Insider-Source\eden-teams\ui\eden-teams-ui
+npm install
+npm run dev    # visit http://localhost:5173 (first-run hero, sample chips)
+
+# 3. Demo sign-in
+# Use one of the accounts above (e.g., alice.rivers@contoso.onmicrosoft.com / Alice!2025)
+# either locally or at https://eden-teams.kellzkreations.com once DNS binding is healthy
+```
+
+
 #### React SPA scaffolding (shared core)
 
 ```bash
