@@ -55,7 +55,8 @@ class CDRAssistant:
             return "No call records found for the specified criteria."
 
         lines = [f"Found {len(records)} call record(s):\n"]
-        for i, record in enumerate(records[:20], 1):  # Limit to 20 for context size
+        # Limit to 20 for context size
+        for i, record in enumerate(records[:20], 1):
             lines.append(f"{i}. {record.to_summary()}")
             lines.append("")
 
@@ -80,8 +81,8 @@ class CDRAssistant:
         if not settings.graph_configured:
             return (
                 "Microsoft Graph API is not configured. "
-                "Please set AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET "
-                "environment variables to fetch call records."
+                "Please set AZURE_TENANT_ID, AZURE_CLIENT_ID, and "
+                "AZURE_CLIENT_SECRET environment variables to fetch call records."
             )
 
         if not settings.openai_api_key and not settings.use_azure_openai:
@@ -116,8 +117,12 @@ class CDRAssistant:
                 summary = self.cdr_service.get_call_summary(records)
                 context += "\n\nSummary Statistics:\n"
                 context += f"- Total Calls: {summary['total_calls']}\n"
-                context += f"- Total Duration: {summary['total_duration_formatted']}\n"
-                context += f"- Unique Participants: {summary['participant_count']}\n"
+                context += (
+                    f"- Total Duration: {summary['total_duration_formatted']}\n"
+                )
+                context += (
+                    f"- Unique Participants: {summary['participant_count']}\n"
+                )
                 context += f"- Call Types: {summary['call_types']}\n"
 
             # Send to LLM for natural language processing
@@ -225,8 +230,8 @@ def main(query: Optional[str] = None) -> int:
 
     print("-" * 60)
     print("\nEnterprise (C2) quick check:")
-    print("  - Use managed identity + Key Vault for Graph and OpenAI secrets in Azure.")
-    print("  - Enable logging/metrics (Log Analytics/App Insights) and basic alerts.")
+    print("  - Use managed identity + Key Vault for Graph and OpenAI secrets.")
+    print("  - Enable logging/metrics and basic alerts.")
     print("  - See README: 'Enterprise Readiness (C2 checklist)' for details.\n")
 
     # Create assistant
@@ -247,7 +252,9 @@ def main(query: Optional[str] = None) -> int:
         else:
             # Interactive mode
             logger.info("Entering interactive mode")
-            print("\nAsk questions about Teams call records in natural language.")
+            print(
+                "\nAsk questions about Teams call records in natural language."
+            )
             print("Examples:")
             print("  - Show me calls from last week")
             print("  - How many calls did john@company.com make yesterday?")

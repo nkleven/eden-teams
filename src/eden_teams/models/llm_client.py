@@ -5,6 +5,8 @@ This module provides a client for interacting with Large Language Models
 to analyze and query Microsoft Teams call records.
 """
 
+# flake8: noqa=E501
+
 import logging
 from typing import Dict, List, Optional
 

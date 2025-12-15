@@ -132,7 +132,10 @@ class CallRecord(BaseModel):
     call_type: CallType = Field(default=CallType.UNKNOWN, description="Type of call")
     start_time: datetime = Field(description="Call start time")
     end_time: Optional[datetime] = Field(default=None, description="Call end time")
-    organizer: Optional[Participant] = Field(default=None, description="Call organizer")
+    organizer: Optional[Participant] = Field(
+        default=None,
+        description="Call organizer",
+    )
     participants: List[Participant] = Field(
         default_factory=list, description="All participants"
     )
@@ -204,7 +207,11 @@ class CallRecord(BaseModel):
             f"Type: {self.call_type.value}",
             f"Start: {self.start_time.isoformat()}",
             f"Duration: {self.duration_formatted}",
-            f"Participants ({self.participant_count}): {', '.join(self.get_participant_names())}",
+            (
+                "Participants ("
+                f"{self.participant_count}): "
+                f"{', '.join(self.get_participant_names())}"
+            ),
         ]
         if self.organizer:
             lines.insert(2, f"Organizer: {self.organizer.identifier}")

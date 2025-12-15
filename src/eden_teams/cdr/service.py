@@ -34,7 +34,8 @@ class CallRecordService:
         Initialize the Call Record Service.
 
         Args:
-            graph_client: Optional GraphClient instance. Creates new one if not provided.
+            graph_client: Optional GraphClient instance. Creates
+                new one if not provided.
         """
         self._graph = graph_client or GraphClient()
         self._user_cache: Dict[str, Dict[str, Any]] = {}

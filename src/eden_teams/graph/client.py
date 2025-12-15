@@ -6,7 +6,7 @@ Microsoft Graph API endpoints.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -174,7 +174,9 @@ class GraphClient:
         """
         endpoint = "/users"
         params = {
-            "$filter": f"startswith(displayName, '{query}') or startswith(mail, '{query}')",
+            "$filter": (
+                f"startswith(displayName, '{query}') " f"or startswith(mail, '{query}')"
+            ),
             "$top": 10,
         }
         response = self.get(endpoint, params)
