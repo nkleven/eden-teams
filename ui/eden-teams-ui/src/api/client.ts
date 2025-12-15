@@ -2,7 +2,6 @@ import axios from "axios";
 
 const baseURL =
   import.meta.env.VITE_API_BASE ||
-  process.env.REACT_APP_API_BASE ||
   "https://eden-api.redmushroom-c729ca5a.eastus2.azurecontainerapps.io";
 
 export const apiClient = axios.create({

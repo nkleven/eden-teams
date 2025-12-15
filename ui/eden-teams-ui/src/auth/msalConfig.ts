@@ -1,11 +1,7 @@
-const tenantId =
-  import.meta.env.VITE_AAD_TENANT_ID || process.env.REACT_APP_AAD_TENANT_ID;
-const clientId =
-  import.meta.env.VITE_AAD_CLIENT_ID || process.env.REACT_APP_AAD_CLIENT_ID;
+const tenantId = import.meta.env.VITE_AAD_TENANT_ID;
+const clientId = import.meta.env.VITE_AAD_CLIENT_ID;
 const redirectUri =
-  import.meta.env.VITE_AAD_REDIRECT_URI ||
-  process.env.REACT_APP_AAD_REDIRECT_URI ||
-  window.location.origin;
+  import.meta.env.VITE_AAD_REDIRECT_URI || window.location.origin;
 
 if (!clientId || !tenantId) {
   // eslint-disable-next-line no-console

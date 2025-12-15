@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
@@ -11,7 +11,7 @@ export const WithAuth = ({ children }: { children: ReactNode }) => {
   const { instance } = useMsal();
 
   const handleLogin = () => {
-    instance.loginRedirect(loginRequest).catch((error) => {
+    instance.loginRedirect(loginRequest).catch((error: unknown) => {
       // eslint-disable-next-line no-console
       console.error("MSAL login failed", error);
     });
