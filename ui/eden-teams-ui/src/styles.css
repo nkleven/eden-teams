@@ -48,3 +48,149 @@ body,
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
+
+/* Configuration Required Page */
+.config-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.config-card {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 700px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.config-icon {
+  font-size: 3rem;
+  margin-bottom: 8px;
+}
+
+.config-card h1 {
+  margin: 0 0 8px 0;
+  font-size: 1.75rem;
+  color: #1a1a1a;
+}
+
+.config-subtitle {
+  color: #666;
+  font-size: 1rem;
+  margin: 0 0 24px 0;
+}
+
+.config-steps {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.config-steps h3 {
+  margin: 0 0 16px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.config-steps ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.config-steps li {
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.config-steps li strong {
+  display: block;
+  color: #1a1a1a;
+}
+
+.config-steps li span {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.config-steps li code {
+  background: #e9ecef;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #d63384;
+}
+
+.config-code {
+  background: #1e1e1e;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.config-code code {
+  background: transparent;
+  color: #9cdcfe;
+  font-family: "Consolas", "Monaco", monospace;
+  font-size: 0.85rem;
+  padding: 0;
+}
+
+.config-help {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.config-help a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.config-help a:hover {
+  text-decoration: underline;
+}
+
+.config-current {
+  border-top: 1px solid #e9ecef;
+  padding-top: 20px;
+}
+
+.config-current h4 {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.config-current table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.config-current td {
+  padding: 8px 12px;
+  border: 1px solid #e9ecef;
+  font-size: 0.85rem;
+}
+
+.config-current td:first-child {
+  font-family: "Consolas", "Monaco", monospace;
+  background: #f8f9fa;
+  width: 40%;
+}
+
+.config-current td.set {
+  color: #198754;
+}
+
+.config-current td.missing {
+  color: #dc3545;
+}
