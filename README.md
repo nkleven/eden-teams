@@ -109,8 +109,6 @@ python -m eden_teams.main
 eden-teams
 ```
 
-<<<<<<< Updated upstream
-=======
 ### UI/UX Roadmap
 
 We are building a shared React + Fluent UI experience that can ship both as a standalone web app and as a Teams tab:
@@ -160,7 +158,6 @@ For Azure Static Web Apps or App Service, add the same variables as configuratio
 4. Zip `manifest.json` + icons → `eden-teams-teamsapp.zip`, then side-load via Teams → Apps → Upload a custom app.
 5. Once validated, publish to your org’s Teams app catalog so Charlie can run the demo directly inside Teams.
 
->>>>>>> Stashed changes
 ### Using as a Library
 
 ```python
