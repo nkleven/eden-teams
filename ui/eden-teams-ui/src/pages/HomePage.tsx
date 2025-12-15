@@ -58,7 +58,7 @@ const HomePage = ({ toasterId }: HomePageProps) => {
   const handleSubmit = async () => {
     if (!question.trim()) {
       dispatchToast(
-        <Toast appearance="warning">
+        <Toast>
           <ToastTitle>Please enter a question.</ToastTitle>
         </Toast>,
         { position: "top-end" }
@@ -76,7 +76,7 @@ const HomePage = ({ toasterId }: HomePageProps) => {
       setAnswer(response.answer);
     } catch (error) {
       dispatchToast(
-        <Toast appearance="danger">
+        <Toast>
           <ToastTitle>
             {(error as Error)?.message ?? "Failed to query call records."}
           </ToastTitle>
@@ -98,7 +98,9 @@ const HomePage = ({ toasterId }: HomePageProps) => {
             <Textarea
               id="question"
               value={question}
-              onChange={(_, data) => setQuestion(data.value)}
+              onChange={(_: unknown, data: { value: string }) =>
+                setQuestion(data.value)
+              }
               placeholder="Example: Summarize call quality issues for sales last week."
               resize="vertical"
             />
@@ -108,7 +110,9 @@ const HomePage = ({ toasterId }: HomePageProps) => {
             <Input
               id="user"
               value={user}
-              onChange={(_, data) => setUser(data.value)}
+              onChange={(_: unknown, data: { value: string }) =>
+                setUser(data.value)
+              }
               placeholder="john@contoso.com"
             />
           </div>
@@ -117,14 +121,18 @@ const HomePage = ({ toasterId }: HomePageProps) => {
               <Label>Start date</Label>
               <DatePicker
                 value={startDate}
-                onSelectDate={(date) => setStartDate(date ?? undefined)}
+                onSelectDate={(date: Date | null | undefined) =>
+                  setStartDate(date ?? undefined)
+                }
               />
             </div>
             <div>
               <Label>End date</Label>
               <DatePicker
                 value={endDate}
-                onSelectDate={(date) => setEndDate(date ?? undefined)}
+                onSelectDate={(date: Date | null | undefined) =>
+                  setEndDate(date ?? undefined)
+                }
               />
             </div>
           </div>

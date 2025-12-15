@@ -47,7 +47,7 @@ const CallExplorerPage = () => {
             <Label>User</Label>
             <Input
               value={filters.user}
-              onChange={(_, data) =>
+              onChange={(_: unknown, data: { value: string }) =>
                 setFilters((prev) => ({ ...prev, user: data.value }))
               }
               placeholder="user@contoso.com"
@@ -57,7 +57,7 @@ const CallExplorerPage = () => {
             <Label>Modality</Label>
             <Input
               value={filters.modality}
-              onChange={(_, data) =>
+              onChange={(_: unknown, data: { value: string }) =>
                 setFilters((prev) => ({ ...prev, modality: data.value }))
               }
               placeholder="Audio, Video..."
@@ -67,7 +67,7 @@ const CallExplorerPage = () => {
             <Label>Start date</Label>
             <DatePicker
               value={filters.start}
-              onSelectDate={(date) =>
+              onSelectDate={(date: Date | null | undefined) =>
                 setFilters((prev) => ({ ...prev, start: date ?? undefined }))
               }
             />
@@ -76,7 +76,7 @@ const CallExplorerPage = () => {
             <Label>End date</Label>
             <DatePicker
               value={filters.end}
-              onSelectDate={(date) =>
+              onSelectDate={(date: Date | null | undefined) =>
                 setFilters((prev) => ({ ...prev, end: date ?? undefined }))
               }
             />

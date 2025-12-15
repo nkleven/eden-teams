@@ -7,6 +7,7 @@ import {
   Text,
   tokens
 } from "@fluentui/react-components";
+import type { SelectTabData, SelectTabEvent } from "@fluentui/react-components";
 import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMsal } from "@azure/msal-react";
@@ -64,7 +65,9 @@ const AppShell = ({ children }: { children: ReactNode }) => {
         <TabList
           selectedValue={location.pathname}
           vertical
-          onTabSelect={(_, data: any) => navigate(data.value as string)}
+          onTabSelect={(_event: SelectTabEvent, data: SelectTabData) =>
+            navigate(String(data.value))
+          }
         >
           {tabs.map((tab) => (
             <Tab key={tab.value} value={tab.value}>
