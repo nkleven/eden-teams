@@ -109,6 +109,58 @@ python -m eden_teams.main
 eden-teams
 ```
 
+<<<<<<< Updated upstream
+=======
+### UI/UX Roadmap
+
+We are building a shared React + Fluent UI experience that can ship both as a standalone web app and as a Teams tab:
+
+- **Core SPA (shared)** – Create React App / Vite with TypeScript, `@fluentui/react-components`, `@azure/msal-browser`, `@azure/msal-react`. Pages: Home (query console + results), Call Explorer (filters + timeline/table), Admin (health + C2 checklist). All API calls go through `eden-api`.
+- **Option A: Standalone web app** – Host the built SPA in Azure Static Web Apps (or App Service) with MSAL redirect URI `https://eden-teams-ui.<region>.azurestaticapps.net` (or custom domain) and set `REACT_APP_API_BASE` to your Container App URL.
+- **Option B: Teams app wrapper** – Host the same SPA at an HTTPS endpoint (e.g., `https://teamsui.kellzkreations.com`), add Microsoft Teams JS SDK for SSO, and package a Teams app manifest with a Personal Tab pointing to the SPA.
+- **Next steps (2025‑12‑15T19:00:06.961Z)** – Scaffold the React app, add MSAL auth + Fluent UI shell, implement the Home query console, and create the Teams app manifest so Charlie can demo inside Microsoft Teams.
+
+#### React SPA scaffolding (shared core)
+
+```bash
+# Source lives in ui/eden-teams-ui
+cd ui/eden-teams-ui
+npm install
+npm run dev
+```
+
+Key files to add/update:
+
+- `src/msalConfig.ts` – export MSAL configuration (clientId, authority, redirectURI) shared by standalone + Teams builds.
+- `src/components/AppShell.tsx` – Fluent UI layout (left nav + top bar) hosting Home, Call Explorer, Admin routes.
+- `src/pages/HomePage.tsx` – Query console with text area, date picker, People Picker, “Ask” button, results cards/table fed by `eden-api`.
+- `src/api/client.ts` – Axios instance reading `process.env.REACT_APP_API_BASE` (point to `https://eden-api.redmushroom-...azurecontainerapps.io` or your custom domain).
+- `src/auth/withAuth.tsx` – Higher-order component wrapping routes with MSAL `AuthenticatedTemplate`.
+
+Set these environment variables for local development:
+
+```bash
+REACT_APP_API_BASE=https://localhost:7070   # or your tunneled eden-api
+REACT_APP_AAD_CLIENT_ID=<spa-client-id>   # or use VITE_AAD_CLIENT_ID in a .env file
+REACT_APP_AAD_TENANT_ID=<tenant-id>
+```
+
+Copy `ui/eden-teams-ui/.env.example` to `.env` in the same folder for local testing; Vite picks up any variables prefixed with `VITE_`.
+
+For Azure Static Web Apps or App Service, add the same variables as configuration settings and update the MSAL redirect URI to match the deployed hostname (plus `https://teamsui.kellzkreations.com` for Teams).
+
+#### Teams app packaging (personal tab)
+
+1. Host the built SPA at an HTTPS origin (e.g., `https://teamsui.kellzkreations.com`) and ensure MSAL redirect URI includes `/auth`.
+2. Add Teams JS SDK initialization in your React app (e.g., wrap `App` with `TeamsFxProvider` or call `microsoftTeams.app.initialize()` in a `useEffect`).
+3. Create a `teams/manifest.json` with:
+   - `staticTabs` → `contentUrl`, `websiteUrl`, and `scopes: ["personal"]` pointing to your hosted SPA.
+   - `webApplicationInfo` referencing the same AAD app used by MSAL (clientId + resource).
+   - Icons (`color.png`, `outline.png`) at 192x192 and 32x32 in `/teams`.
+4. Zip `manifest.json` + icons → `eden-teams-teamsapp.zip`, then side-load via Teams → Apps → Upload a custom app.
+5. Once validated, publish to your org’s Teams app catalog so Charlie can run the demo directly inside Teams.
+
+>>>>>>> Stashed changes
 ### Using as a Library
 
 ```python
