@@ -125,7 +125,9 @@ class CDRAssistant:
 
             # Store in conversation history
             self._conversation_history.append({"role": "user", "content": query})
-            self._conversation_history.append({"role": "assistant", "content": response})
+            self._conversation_history.append(
+                {"role": "assistant", "content": response}
+            )
 
             return response
 
@@ -155,7 +157,8 @@ Examples:
         """,
     )
     parser.add_argument(
-        "-q", "--query",
+        "-q",
+        "--query",
         type=str,
         help="Single query to process (non-interactive mode)",
     )
@@ -166,7 +169,8 @@ Examples:
         help="Number of days of call history to analyze (default: 7)",
     )
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
         help="Enable verbose (debug) logging",
     )
