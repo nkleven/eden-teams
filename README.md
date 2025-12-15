@@ -118,6 +118,12 @@ We are building a shared React + Fluent UI experience that can ship both as a st
 - **Option B: Teams app wrapper** – Host the same SPA at an HTTPS endpoint (e.g., `https://teamsui.kellzkreations.com`), add Microsoft Teams JS SDK for SSO, and package a Teams app manifest with a Personal Tab pointing to the SPA.
 - **Next steps (2025‑12‑15T19:00:06.961Z)** – Scaffold the React app, add MSAL auth + Fluent UI shell, implement the Home query console, and create the Teams app manifest so Charlie can demo inside Microsoft Teams.
 
+##### Custom domain + Azure DNS (OOBE helper – 2025‑12‑15T22:49:49.424Z)
+
+1. **DNS**: In your DNS zone, add `CNAME eden-teams -> eden-api.redmushroom-c729ca5a.eastus2.azurecontainerapps.io` (remove A records with that host).
+2. **Portal binding**: Azure Portal → Container Apps → `eden-api` → Custom domains → remove stale entries → **Add custom domain**, enter `eden-teams.kellzkreations.com`, select **Managed certificate**, follow any TXT verification, and wait for “Healthy” + `bindingType: SniEnabled`.
+3. **Smoke**: `nslookup eden-teams.kellzkreations.com` (should point to the Container App FQDN) and `curl -I https://eden-teams.kellzkreations.com` (should match the direct FQDN instead of `ERR_CONNECTION_RESET`).
+
 #### React SPA scaffolding (shared core)
 
 ```bash
