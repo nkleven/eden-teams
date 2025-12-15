@@ -249,6 +249,14 @@ az containerapp create -g "$RG" -n "$APP_NAME" \
     LOG_LEVEL="INFO"
 ```
 
+### Enterprise Readiness (C2 checklist)
+
+- **Identity & access**: Use system-assigned managed identity for the Container App and grant least-privilege Graph permissions per environment.
+- **Secrets & config**: Store Graph and OpenAI credentials in Azure Key Vault; reference them from the app using Key Vault references, not raw environment variables.
+- **Data & compliance**: Decide retention for CDR data and LLM logs; avoid logging PII where possible and ensure data residency requirements are met.
+- **Observability**: Enable Log Analytics / Application Insights, add basic dashboards, and set alerts for Graph/LLM failures and high latency.
+- **Deployment & change**: Use Bicep/Terraform + CI/CD (e.g., GitHub Actions) for ACR, Container App, and Key Vault; consider blue-green or canary deployments for production.
+
 ### Running Tests
 
 ```bash

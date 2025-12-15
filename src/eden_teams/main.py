@@ -224,6 +224,10 @@ def main(query: Optional[str] = None) -> int:
         logger.warning("OpenAI API not configured. Set OPENAI_API_KEY.")
 
     print("-" * 60)
+    print("\nEnterprise (C2) quick check:")
+    print("  - Use managed identity + Key Vault for Graph and OpenAI secrets in Azure.")
+    print("  - Enable logging/metrics (Log Analytics/App Insights) and basic alerts.")
+    print("  - See README: 'Enterprise Readiness (C2 checklist)' for details.\n")
 
     # Create assistant
     assistant = CDRAssistant()
