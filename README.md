@@ -204,6 +204,51 @@ Eden Teams uses the Microsoft Graph Call Records API to fetch detailed informati
 
 ## Development
 
+### Azure Container Apps (example)
+
+```bash
+# Set your subscription
+az account set --subscription bf2dc682-be5b-4da7-91f2-1a6709ddc05b
+
+# Assumes resource group 'eden-teams-rg' and location 'eastus' already exist
+RG=eden-teams-rg
+LOCATION=eastus
+ACR_NAME=edenteamsacr
+ENV_NAME=eden-env
+APP_NAME=eden-teams-app
+
+# Create ACR (once)
+az acr create -g "$RG" -n "$ACR_NAME" --sku Basic
+az acr login -n "$ACR_NAME"
+
+# Build and push image from repo root
+docker build -t "$ACR_NAME.azurecr.io/eden-teams:roadshow" .
+docker push "$ACR_NAME.azurecr.io/eden-teams:roadshow"
+
+# Create Container Apps environment (once)
+az containerapp env create -g "$RG" -n "$ENV_NAME" -l "$LOCATION"
+
+# Get ACR credentials so the Container App can pull the image (first-run helper)
+ACR_USER=$(az acr credential show -g "$RG" -n "$ACR_NAME" --query "username" -o tsv)
+ACR_PASS=$(az acr credential show -g "$RG" -n "$ACR_NAME" --query "passwords[0].value" -o tsv)
+
+# Create the Container App (or update image with az containerapp update)
+az containerapp create -g "$RG" -n "$APP_NAME" \
+  --environment "$ENV_NAME" \
+  --image "$ACR_NAME.azurecr.io/eden-teams:roadshow" \
+  --registry-server "$ACR_NAME.azurecr.io" \
+  --registry-username "$ACR_USER" \
+  --registry-password "$ACR_PASS" \
+  --ingress external --target-port 8000 \
+  --env-vars \
+    AZURE_TENANT_ID="<your-tenant-id>" \
+    AZURE_CLIENT_ID="<your-client-id>" \
+    AZURE_CLIENT_SECRET="<your-client-secret>" \
+    OPENAI_API_KEY="<your-openai-key>" \
+    APP_ENV="production" \
+    LOG_LEVEL="INFO"
+```
+
 ### Running Tests
 
 ```bash
