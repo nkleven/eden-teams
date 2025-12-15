@@ -69,6 +69,17 @@ cp .env.example .env    # macOS/Linux
 # Edit .env and add your credentials
 ```
 
+### 5. IDE & GitHub extensions (2025‑12‑15T23:15:09.711Z)
+
+Install these VS Code extensions so the local dev experience matches the repo’s expectations:
+- **GitHub Copilot** (core suggestions)
+- **GitHub Copilot Chat**
+- **GitHub Copilot Edits**
+- **GitHub Pull Requests & Issues**
+- **GitHub Repositories**
+
+They’re optional for runtime but required for the documented OOBE/testing walkthroughs—after installing, reload VS Code so authentication kicks in before running the steps below.
+
 ## Configuration
 
 Create a `.env` file based on `.env.example`:
