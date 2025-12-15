@@ -1,11 +1,11 @@
 """
-Configuration management for Bible LLM.
+Configuration management for Eden Teams.
 
 This module provides centralized configuration using Pydantic settings.
 """
 
 from functools import lru_cache
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -29,6 +29,11 @@ class Settings(BaseSettings):
     debug: bool = Field(default=True, alias="DEBUG")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
 
+    # Microsoft Graph API Configuration
+    azure_tenant_id: str = Field(default="", alias="AZURE_TENANT_ID")
+    azure_client_id: str = Field(default="", alias="AZURE_CLIENT_ID")
+    azure_client_secret: str = Field(default="", alias="AZURE_CLIENT_SECRET")
+
     # OpenAI Configuration
     openai_api_key: str = Field(default="", alias="OPENAI_API_KEY")
 
@@ -41,16 +46,12 @@ class Settings(BaseSettings):
 
     # Model Configuration
     default_model: str = Field(default="gpt-4", alias="DEFAULT_MODEL")
-    embedding_model: str = Field(
-        default="text-embedding-3-small", alias="EMBEDDING_MODEL"
-    )
     max_tokens: int = Field(default=4096, alias="MAX_TOKENS")
     temperature: float = Field(default=0.7, alias="TEMPERATURE")
 
-    # Database Configuration
-    chroma_persist_directory: str = Field(
-        default="./chroma_db", alias="CHROMA_PERSIST_DIRECTORY"
-    )
+    # Microsoft Graph Settings
+    graph_api_version: str = Field(default="v1.0", alias="GRAPH_API_VERSION")
+    call_records_page_size: int = Field(default=100, alias="CALL_RECORDS_PAGE_SIZE")
 
     @property
     def is_development(self) -> bool:
@@ -63,9 +64,16 @@ class Settings(BaseSettings):
         return self.app_env == "production"
 
     @property
-    def use_azure(self) -> bool:
+    def use_azure_openai(self) -> bool:
         """Check if Azure OpenAI should be used."""
         return bool(self.azure_openai_api_key and self.azure_openai_endpoint)
+
+    @property
+    def graph_configured(self) -> bool:
+        """Check if Microsoft Graph API is configured."""
+        return bool(
+            self.azure_tenant_id and self.azure_client_id and self.azure_client_secret
+        )
 
 
 @lru_cache

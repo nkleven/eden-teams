@@ -1,29 +1,40 @@
-# Bible LLM
+# Eden Teams
 
-A Python-based Large Language Model application focused on Biblical texts.
+A Python application for connecting customers to Microsoft Teams Call Detail Records (CDR) using AI-powered natural language queries.
 
 ## Overview
 
-Bible LLM provides tools and utilities for working with Biblical texts using modern Large Language Model technologies. It supports:
+Eden Teams provides tools and utilities for accessing, analyzing, and querying Microsoft Teams Call Detail Records. It supports:
 
-- Loading and managing Bible text data from multiple translations
-- Text preprocessing optimized for LLM consumption
-- Semantic search across Bible verses using embeddings
-- Question answering about Biblical content
-- Verse explanation and translation comparison
+- **Microsoft Graph API Integration** - Fetch call records from Microsoft Teams
+- **Natural Language Queries** - Ask questions about call data in plain English
+- **Call Analytics** - Analyze call patterns, duration, quality metrics
+- **Customer Lookup** - Connect customers to their Teams call history
+- **AI-Powered Insights** - Use LLMs to summarize and explain call data
+
+## Features
+
+- 📞 Retrieve Call Detail Records from Microsoft Teams
+- 🔍 Search calls by user, date range, or call type
+- 📊 Analyze call quality metrics (jitter, packet loss, latency)
+- 🤖 Natural language interface for querying call data
+- 📈 Generate reports and summaries
+- 🔐 Secure authentication via Microsoft Entra ID (Azure AD)
 
 ## Requirements
 
 - Python 3.11 or higher
-- OpenAI API key (or Azure OpenAI)
+- Microsoft 365 tenant with Teams
+- Azure App Registration with appropriate permissions
+- OpenAI API key (or Azure OpenAI) for AI features
 
 ## Installation
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/bible-llm.git
-cd bible-llm
+git clone https://github.com/nkleven/eden-teams.git
+cd eden-teams
 ```
 
 ### 2. Create Virtual Environment
@@ -55,7 +66,7 @@ pip install -r requirements.txt
 copy .env.example .env  # Windows
 cp .env.example .env    # macOS/Linux
 
-# Edit .env and add your API keys
+# Edit .env and add your credentials
 ```
 
 ## Configuration
@@ -63,11 +74,16 @@ cp .env.example .env    # macOS/Linux
 Create a `.env` file based on `.env.example`:
 
 ```env
-# Required: OpenAI API Key
+# Microsoft Graph API Configuration
+AZURE_TENANT_ID=your-tenant-id
+AZURE_CLIENT_ID=your-client-id
+AZURE_CLIENT_SECRET=your-client-secret
+
+# OpenAI Configuration (for AI features)
 OPENAI_API_KEY=your-openai-api-key-here
 
-# Optional: Azure OpenAI (if using Azure)
-AZURE_OPENAI_API_KEY=your-azure-key
+# Optional: Azure OpenAI
+AZURE_OPENAI_API_KEY=your-azure-openai-key
 AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
 
 # Application Settings
@@ -75,42 +91,55 @@ APP_ENV=development
 LOG_LEVEL=INFO
 ```
 
+### Azure App Registration
+
+Your Azure App Registration needs these Microsoft Graph API permissions:
+- `CallRecords.Read.All` - Read all call records
+- `User.Read.All` - Read user profiles (for resolving user names)
+
 ## Usage
 
 ### Running the Application
 
 ```bash
 # Interactive mode
-python -m bible_llm.main
+python -m eden_teams.main
 
 # Or using the CLI
-bible-llm
+eden-teams
 ```
 
 ### Using as a Library
 
 ```python
-from bible_llm.data import BibleLoader
-from bible_llm.models import LLMClient
+from eden_teams.graph import GraphClient
+from eden_teams.cdr import CallRecordService
+from eden_teams.models import LLMClient
 
-# Load Bible data
-loader = BibleLoader()
-loader.load_json("data/raw/kjv.json")
+# Initialize the Graph client
+graph = GraphClient()
 
-# Get a specific verse
-verse = loader.get_verse("John", 3, 16)
-print(verse.text)
+# Get call records for a user
+cdr_service = CallRecordService(graph)
+calls = cdr_service.get_user_calls(
+    user_id="user@company.com",
+    start_date="2024-01-01",
+    end_date="2024-01-31"
+)
 
-# Search for verses
-results = loader.search("love")
-for verse in results:
-    print(f"{verse.reference}: {verse.text}")
+# Display call summary
+for call in calls:
+    print(f"{call.start_time} - {call.duration}s - {call.call_type}")
 
-# Use the LLM client
-client = LLMClient()
-answer = client.answer_bible_question(
-    "What does John 3:16 mean?",
-    verses=[verse.text]
+# Use AI to analyze calls
+llm = LLMClient()
+summary = llm.summarize_calls(calls)
+print(summary)
+
+# Natural language query
+answer = llm.query_calls(
+    "How many calls did John Smith make last week?",
+    context=calls
 )
 print(answer)
 ```
@@ -118,7 +147,7 @@ print(answer)
 ## Project Structure
 
 ```
-bible-llm/
+eden-teams/
 ├── .github/
 │   └── copilot-instructions.md
 ├── .vscode/
@@ -126,14 +155,18 @@ bible-llm/
 │   ├── launch.json
 │   └── extensions.json
 ├── src/
-│   └── bible_llm/
+│   └── eden_teams/
 │       ├── __init__.py
 │       ├── main.py
 │       ├── config.py
-│       ├── data/
+│       ├── graph/
 │       │   ├── __init__.py
-│       │   ├── bible_loader.py
-│       │   └── preprocessor.py
+│       │   ├── client.py
+│       │   └── auth.py
+│       ├── cdr/
+│       │   ├── __init__.py
+│       │   ├── models.py
+│       │   └── service.py
 │       ├── models/
 │       │   ├── __init__.py
 │       │   ├── embeddings.py
@@ -142,13 +175,7 @@ bible-llm/
 │           ├── __init__.py
 │           └── logging_config.py
 ├── tests/
-│   ├── conftest.py
-│   ├── test_bible_loader.py
-│   ├── test_preprocessor.py
-│   └── test_config.py
 ├── data/
-│   ├── raw/
-│   └── processed/
 ├── .env.example
 ├── .gitignore
 ├── .pre-commit-config.yaml
@@ -157,17 +184,25 @@ bible-llm/
 └── README.md
 ```
 
+## Microsoft Graph API
+
+### Call Records API
+
+Eden Teams uses the Microsoft Graph Call Records API to fetch detailed information about Teams calls:
+
+- **Call metadata** - Start time, end time, organizer, participants
+- **Call quality** - Audio/video quality metrics
+- **Session details** - Individual call legs and participants
+- **Modalities** - Audio, video, screen sharing, app sharing
+
+### Required Permissions
+
+| Permission | Type | Description |
+|------------|------|-------------|
+| CallRecords.Read.All | Application | Read all call records |
+| User.Read.All | Application | Read all users' profiles |
+
 ## Development
-
-### Setting Up Development Environment
-
-```bash
-# Install dev dependencies
-pip install -e ".[dev]"
-
-# Set up pre-commit hooks
-pre-commit install
-```
 
 ### Running Tests
 
@@ -176,10 +211,10 @@ pre-commit install
 pytest
 
 # Run with coverage
-pytest --cov=src/bible_llm --cov-report=html
+pytest --cov=src/eden_teams --cov-report=html
 
 # Run specific test file
-pytest tests/test_bible_loader.py -v
+pytest tests/test_cdr.py -v
 ```
 
 ### Code Quality
@@ -195,43 +230,6 @@ pylint src
 
 # Type checking
 mypy src
-```
-
-### Pre-commit Hooks
-
-The project uses pre-commit hooks to ensure code quality:
-
-```bash
-# Install hooks
-pre-commit install
-
-# Run manually
-pre-commit run --all-files
-```
-
-## Bible Data
-
-Place your Bible data files in the `data/raw/` directory. The expected JSON format:
-
-```json
-{
-  "books": [
-    {
-      "name": "Genesis",
-      "chapters": [
-        {
-          "chapter": 1,
-          "verses": [
-            {
-              "verse": 1,
-              "text": "In the beginning God created the heaven and the earth."
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
 ```
 
 ## License

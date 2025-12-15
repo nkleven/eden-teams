@@ -2,50 +2,97 @@
 Pytest configuration and fixtures.
 """
 
+from datetime import datetime, timedelta
+
 import pytest
-from pathlib import Path
 
 
 @pytest.fixture
-def sample_verse_data() -> dict:
-    """Provide sample Bible verse data for testing."""
+def sample_call_record_data() -> dict:
+    """Provide sample call record data for testing."""
     return {
-        "books": [
-            {
-                "name": "John",
-                "chapters": [
-                    {
-                        "chapter": 3,
-                        "verses": [
-                            {
-                                "verse": 16,
-                                "text": "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."
-                            },
-                            {
-                                "verse": 17,
-                                "text": "For God sent not his Son into the world to condemn the world; but that the world through him might be saved."
-                            }
-                        ]
-                    }
-                ]
+        "id": "call-123",
+        "type": "peerToPeer",
+        "startDateTime": "2024-01-15T10:00:00Z",
+        "endDateTime": "2024-01-15T10:30:00Z",
+        "organizer": {
+            "identity": {
+                "user": {
+                    "id": "user-1",
+                    "displayName": "John Smith",
+                },
+                "userPrincipalName": "john@company.com",
             }
-        ]
+        },
+        "participants": [
+            {
+                "identity": {
+                    "user": {
+                        "id": "user-1",
+                        "displayName": "John Smith",
+                    },
+                    "userPrincipalName": "john@company.com",
+                }
+            },
+            {
+                "identity": {
+                    "user": {
+                        "id": "user-2",
+                        "displayName": "Jane Doe",
+                    },
+                    "userPrincipalName": "jane@company.com",
+                }
+            },
+        ],
+        "modalities": ["audio", "video"],
     }
 
 
 @pytest.fixture
-def temp_data_dir(tmp_path: Path) -> Path:
-    """Create a temporary data directory."""
-    data_dir = tmp_path / "data"
-    data_dir.mkdir()
-    return data_dir
+def sample_session_data() -> dict:
+    """Provide sample session data for testing."""
+    return {
+        "id": "session-456",
+        "startDateTime": "2024-01-15T10:00:00Z",
+        "endDateTime": "2024-01-15T10:30:00Z",
+        "caller": {
+            "identity": {
+                "user": {
+                    "id": "user-1",
+                    "displayName": "John Smith",
+                }
+            }
+        },
+        "callee": {
+            "identity": {
+                "user": {
+                    "id": "user-2",
+                    "displayName": "Jane Doe",
+                }
+            }
+        },
+        "modalities": ["audio"],
+    }
 
 
 @pytest.fixture
-def sample_texts() -> list[str]:
-    """Provide sample texts for preprocessing tests."""
+def mock_graph_response() -> list:
+    """Provide mock Graph API response for call records."""
     return [
-        "In the beginning God created the heaven and the earth.",
-        "And the earth was without form, and void; and darkness was upon the face of the deep.",
-        "And the Spirit of God moved upon the face of the waters.",
+        {
+            "id": "call-1",
+            "type": "peerToPeer",
+            "startDateTime": "2024-01-15T10:00:00Z",
+            "endDateTime": "2024-01-15T10:15:00Z",
+            "participants": [],
+            "modalities": ["audio"],
+        },
+        {
+            "id": "call-2",
+            "type": "groupCall",
+            "startDateTime": "2024-01-15T14:00:00Z",
+            "endDateTime": "2024-01-15T15:00:00Z",
+            "participants": [],
+            "modalities": ["audio", "video"],
+        },
     ]

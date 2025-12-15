@@ -1,1 +1,1 @@
-"""Tests for Bible LLM package."""
+"""Tests for Eden Teams package."""

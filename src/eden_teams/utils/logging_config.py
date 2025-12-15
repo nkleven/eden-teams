@@ -1,5 +1,5 @@
 """
-Logging configuration for Bible LLM.
+Logging configuration for Eden Teams.
 
 This module provides centralized logging setup for the application.
 """
@@ -23,9 +23,7 @@ def setup_logging(
         log_file: Optional file path to write logs to.
     """
     if format_string is None:
-        format_string = (
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+        format_string = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
     # Get numeric level
     numeric_level = getattr(logging, level.upper(), logging.INFO)
@@ -57,6 +55,7 @@ def setup_logging(
     # Reduce noise from third-party libraries
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("openai").setLevel(logging.WARNING)
-    logging.getLogger("chromadb").setLevel(logging.WARNING)
+    logging.getLogger("azure").setLevel(logging.WARNING)
+    logging.getLogger("msgraph").setLevel(logging.WARNING)
 
     logging.info("Logging configured: level=%s", level)

@@ -1,14 +1,14 @@
 """
-LLM client wrapper for Bible LLM.
+LLM client for Eden Teams.
 
-This module provides a unified interface for interacting with
-Large Language Models for Bible-related queries.
+This module provides a client for interacting with Large Language Models
+to analyze and query Microsoft Teams call records.
 """
 
 import logging
 from typing import Dict, List, Optional
 
-from bible_llm.config import settings
+from eden_teams.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -17,21 +17,23 @@ class LLMClient:
     """
     Client for interacting with Large Language Models.
 
-    Provides a unified interface for OpenAI and Azure OpenAI APIs
-    with Bible-specific prompt templates and configurations.
+    Provides methods for analyzing call records using natural language
+    and generating insights from call data.
     """
 
-    # System prompt for Bible-focused interactions
-    DEFAULT_SYSTEM_PROMPT = """You are a knowledgeable Bible scholar and assistant.
-Your role is to help users understand Biblical texts, provide accurate quotations,
-explain theological concepts, and offer insights based on scripture.
+    # System prompt for call record analysis
+    DEFAULT_SYSTEM_PROMPT = """You are a helpful assistant that analyzes Microsoft Teams call records.
+Your role is to help users understand their Teams call data by:
+- Answering questions about call patterns and statistics
+- Summarizing call activity for users or time periods
+- Identifying trends in call duration, frequency, and quality
+- Explaining call quality metrics and their implications
 
-Guidelines:
-- Always cite specific Bible verses when referencing scripture
-- Provide historical and cultural context when relevant
-- Be respectful of different interpretations and traditions
-- Acknowledge when topics are debated among scholars
-- Focus on education and understanding, not preaching
+When analyzing call data:
+- Be specific with numbers and dates
+- Highlight important patterns or anomalies
+- Provide actionable insights when relevant
+- Format responses clearly with bullet points or tables when appropriate
 """
 
     def __init__(
@@ -50,7 +52,7 @@ Guidelines:
         """
         self.model = model or settings.default_model
         self.system_prompt = system_prompt or self.DEFAULT_SYSTEM_PROMPT
-        self.use_azure = use_azure if use_azure is not None else settings.use_azure
+        self.use_azure = use_azure if use_azure is not None else settings.use_azure_openai
         self._client: Optional[object] = None
         logger.info(
             "LLMClient initialized: model=%s, azure=%s",
@@ -88,7 +90,7 @@ Guidelines:
 
         Args:
             message: User message to send.
-            context: Additional context (e.g., relevant Bible verses).
+            context: Additional context (e.g., call record data).
             history: Previous conversation history.
             temperature: Sampling temperature (0-2). Uses config default if None.
             max_tokens: Maximum response tokens. Uses config default if None.
@@ -131,81 +133,82 @@ Guidelines:
         # Build user message with optional context
         user_content = message
         if context:
-            user_content = f"Context:\n{context}\n\nQuestion: {message}"
+            user_content = f"Call Record Data:\n{context}\n\nQuestion: {message}"
 
         messages.append({"role": "user", "content": user_content})
 
         return messages
 
-    def answer_bible_question(
+    def query_calls(
         self,
         question: str,
-        verses: Optional[List[str]] = None,
+        call_data: Optional[str] = None,
     ) -> str:
         """
-        Answer a Bible-related question.
+        Answer a question about call records.
 
         Args:
-            question: The question to answer.
-            verses: Optional list of relevant Bible verses as context.
+            question: Natural language question about calls.
+            call_data: Formatted call record data as context.
 
         Returns:
             Answer to the question.
         """
-        context = None
-        if verses:
-            context = "Relevant Bible verses:\n" + "\n".join(f"- {v}" for v in verses)
+        return self.chat(question, context=call_data)
 
-        return self.chat(question, context=context)
-
-    def explain_verse(self, verse_reference: str, verse_text: str) -> str:
-        """
-        Explain a Bible verse.
-
-        Args:
-            verse_reference: The verse reference (e.g., "John 3:16").
-            verse_text: The text of the verse.
-
-        Returns:
-            Explanation of the verse.
-        """
-        prompt = f"""Please explain the following Bible verse:
-
-{verse_reference}: "{verse_text}"
-
-Provide:
-1. A brief explanation of the verse's meaning
-2. Historical/cultural context
-3. How this verse connects to broader Biblical themes
-"""
-        return self.chat(prompt)
-
-    def compare_translations(
+    def summarize_calls(
         self,
-        verse_reference: str,
-        translations: Dict[str, str],
+        call_summaries: List[str],
+        time_period: Optional[str] = None,
     ) -> str:
         """
-        Compare different translations of a verse.
+        Generate a summary of call activity.
 
         Args:
-            verse_reference: The verse reference.
-            translations: Dictionary of {translation_name: verse_text}.
+            call_summaries: List of call summary strings.
+            time_period: Description of the time period (e.g., "last week").
 
         Returns:
-            Analysis of the translation differences.
+            Natural language summary of call activity.
         """
-        translations_text = "\n".join(
-            f'{name}: "{text}"' for name, text in translations.items()
-        )
+        context = "\n\n".join(call_summaries)
 
-        prompt = f"""Compare these different translations of {verse_reference}:
+        period_text = f" for {time_period}" if time_period else ""
+        prompt = f"""Please provide a comprehensive summary of the following Teams call activity{period_text}.
 
-{translations_text}
+Include:
+1. Total number of calls
+2. Types of calls (meetings, peer-to-peer, etc.)
+3. Key participants
+4. Average call duration
+5. Any notable patterns or observations
 
-Analyze:
-1. Key differences in wording
-2. How different word choices affect meaning
-3. Which translation might be most appropriate for different purposes
-"""
+Call Records:
+{context}"""
+
+        return self.chat(prompt)
+
+    def analyze_call_quality(
+        self,
+        quality_data: str,
+    ) -> str:
+        """
+        Analyze call quality metrics.
+
+        Args:
+            quality_data: Formatted call quality data.
+
+        Returns:
+            Analysis of call quality with recommendations.
+        """
+        prompt = f"""Analyze the following Microsoft Teams call quality metrics and provide insights:
+
+{quality_data}
+
+Please include:
+1. Overall quality assessment
+2. Any concerning metrics
+3. Potential causes for quality issues
+4. Recommendations for improvement"""
+
         return self.chat(prompt)

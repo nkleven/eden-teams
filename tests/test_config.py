@@ -2,10 +2,7 @@
 Tests for configuration module.
 """
 
-import pytest
-from unittest.mock import patch
-
-from bible_llm.config import Settings, get_settings
+from eden_teams.config import Settings
 
 
 class TestSettings:
@@ -21,7 +18,7 @@ class TestSettings:
 
     def test_is_development(self) -> None:
         """Test is_development property."""
-        settings = Settings(app_env="development")
+        settings = Settings(APP_ENV="development")
         assert settings.is_development is True
         assert settings.is_production is False
 
@@ -31,23 +28,29 @@ class TestSettings:
         assert settings.is_production is True
         assert settings.is_development is False
 
-    def test_use_azure_false(self) -> None:
-        """Test use_azure property when Azure not configured."""
+    def test_graph_not_configured(self) -> None:
+        """Test graph_configured property when not configured."""
         settings = Settings()
-        assert settings.use_azure is False
+        assert settings.graph_configured is False
 
-    def test_use_azure_true(self) -> None:
-        """Test use_azure property when Azure is configured."""
+    def test_graph_configured(self) -> None:
+        """Test graph_configured property when configured."""
         settings = Settings(
-            AZURE_OPENAI_API_KEY="test-key",
+            AZURE_TENANT_ID="tenant-123",
+            AZURE_CLIENT_ID="client-123",
+            AZURE_CLIENT_SECRET="secret-123",
+        )
+        assert settings.graph_configured is True
+
+    def test_use_azure_openai_false(self) -> None:
+        """Test use_azure_openai property when not configured."""
+        settings = Settings()
+        assert settings.use_azure_openai is False
+
+    def test_use_azure_openai_true(self) -> None:
+        """Test use_azure_openai property when configured."""
+        settings = Settings(
+            AZURE_OPENAI_API_KEY="key-123",
             AZURE_OPENAI_ENDPOINT="https://test.openai.azure.com/",
         )
-        assert settings.use_azure is True
-
-    @patch.dict("os.environ", {"APP_ENV": "production", "DEBUG": "false"})
-    def test_settings_from_env(self) -> None:
-        """Test loading settings from environment variables."""
-        # Clear the cache to get fresh settings
-        get_settings.cache_clear()
-        settings = Settings()
-        assert settings.app_env == "production"
+        assert settings.use_azure_openai is True

@@ -3,32 +3,37 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bible-llm"
+name = "eden-teams"
 version = "0.1.0"
-description = "A Bible-focused Large Language Model application"
+description = "Connect customers to Microsoft Teams Call Detail Records with AI-powered queries"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.11"
 authors = [
     {name = "Your Name", email = "your.email@example.com"}
 ]
-keywords = ["bible", "llm", "nlp", "machine-learning"]
+keywords = ["microsoft-teams", "call-records", "cdr", "graph-api", "llm", "ai"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Topic :: Communications :: Telephony",
+    "Topic :: Office/Business",
 ]
 dependencies = [
+    "azure-identity>=1.15.0",
     "openai>=1.0.0",
     "langchain>=0.1.0",
     "python-dotenv>=1.0.0",
     "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "httpx>=0.25.0",
     "tiktoken>=0.5.0",
     "chromadb>=0.4.0",
-    "sentence-transformers>=2.2.0",
 ]
 
 [project.optional-dependencies]
@@ -42,15 +47,16 @@ dev = [
     "pylint>=3.0.0",
     "mypy>=1.5.0",
     "pre-commit>=3.4.0",
+    "respx>=0.20.0",
 ]
 
 [project.scripts]
-bible-llm = "bible_llm.main:main"
+eden-teams = "eden_teams.main:main"
 
 [project.urls]
-Homepage = "https://github.com/yourusername/bible-llm"
-Documentation = "https://github.com/yourusername/bible-llm#readme"
-Repository = "https://github.com/yourusername/bible-llm"
+Homepage = "https://github.com/nkleven/eden-teams"
+Documentation = "https://github.com/nkleven/eden-teams#readme"
+Repository = "https://github.com/nkleven/eden-teams"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -59,26 +65,11 @@ where = ["src"]
 line-length = 88
 target-version = ['py311']
 include = '\.pyi?$'
-extend-exclude = '''
-/(
-    \.eggs
-    | \.git
-    | \.hg
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | buck-out
-    | build
-    | dist
-)/
-'''
 
 [tool.isort]
 profile = "black"
 line_length = 88
-known_first_party = ["bible_llm"]
-skip = [".venv", "venv"]
+known_first_party = ["eden_teams"]
 
 [tool.mypy]
 python_version = "3.11"
@@ -88,54 +79,18 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 check_untyped_defs = true
 strict_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-show_error_codes = true
-namespace_packages = true
-explicit_package_bases = true
 
 [[tool.mypy.overrides]]
-module = [
-    "chromadb.*",
-    "sentence_transformers.*",
-    "langchain.*",
-]
+module = ["chromadb.*", "langchain.*", "azure.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_functions = ["test_*"]
-addopts = "-v --cov=src/bible_llm --cov-report=term-missing --cov-report=html"
+addopts = "-v --cov=src/eden_teams --cov-report=term-missing --cov-report=html"
 asyncio_mode = "auto"
 
-[tool.pylint.main]
-py-version = "3.11"
-jobs = 0
-load-plugins = [
-    "pylint.extensions.docparams",
-]
-
-[tool.pylint.messages_control]
-disable = [
-    "C0114",  # missing-module-docstring
-    "C0115",  # missing-class-docstring (we'll enforce via docstrings)
-    "R0903",  # too-few-public-methods
-]
-
-[tool.pylint.format]
-max-line-length = 88
-
 [tool.coverage.run]
-source = ["src/bible_llm"]
+source = ["src/eden_teams"]
 branch = true
-
-[tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if __name__ == .__main__.:",
-    "if TYPE_CHECKING:",
-]
