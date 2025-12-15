@@ -9,7 +9,6 @@ from eden_teams.cdr.models import (
     CallRecord,
     CallSession,
     CallType,
-    Modality,
     Participant,
 )
 

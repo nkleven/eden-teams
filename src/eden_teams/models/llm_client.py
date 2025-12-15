@@ -52,7 +52,9 @@ When analyzing call data:
         """
         self.model = model or settings.default_model
         self.system_prompt = system_prompt or self.DEFAULT_SYSTEM_PROMPT
-        self.use_azure = use_azure if use_azure is not None else settings.use_azure_openai
+        self.use_azure = (
+            use_azure if use_azure is not None else settings.use_azure_openai
+        )
         self._client: Optional[object] = None
         logger.info(
             "LLMClient initialized: model=%s, azure=%s",

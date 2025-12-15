@@ -10,7 +10,6 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 from eden_teams.cdr.models import (
-    CallQuality,
     CallRecord,
     CallSession,
     CallType,
@@ -79,7 +78,9 @@ class CallRecordService:
         logger.info("Parsed %d call records", len(records))
         return records
 
-    def get_call_record(self, call_id: str, include_sessions: bool = False) -> CallRecord:
+    def get_call_record(
+        self, call_id: str, include_sessions: bool = False
+    ) -> CallRecord:
         """
         Get a specific call record by ID.
 
@@ -152,9 +153,7 @@ class CallRecordService:
                 "participant_count": 0,
             }
 
-        total_duration = sum(
-            r.duration_seconds or 0 for r in records
-        )
+        total_duration = sum(r.duration_seconds or 0 for r in records)
 
         call_types: Dict[str, int] = {}
         for record in records:
@@ -169,7 +168,9 @@ class CallRecordService:
         return {
             "total_calls": len(records),
             "total_duration_seconds": total_duration,
-            "average_duration_seconds": total_duration // len(records) if records else 0,
+            "average_duration_seconds": (
+                total_duration // len(records) if records else 0
+            ),
             "total_duration_formatted": self._format_duration(total_duration),
             "average_duration_formatted": self._format_duration(
                 total_duration // len(records) if records else 0
@@ -184,20 +185,25 @@ class CallRecordService:
 
     def _parse_call_record(self, data: Dict[str, Any]) -> CallRecord:
         """Parse raw API data into a CallRecord model."""
+        start_time = self._parse_datetime(data.get("startDateTime"))
+        if start_time is None:
+            # Use current time as fallback if start_time is missing
+            start_time = datetime.utcnow()
+
+        # Parse participants and filter out None values
+        parsed_participants = [
+            self._parse_participant(p) for p in data.get("participants", [])
+        ]
+        participants = [p for p in parsed_participants if p is not None]
+
         return CallRecord(
             id=data.get("id", ""),
             call_type=self._parse_call_type(data.get("type")),
-            start_time=self._parse_datetime(data.get("startDateTime")),
+            start_time=start_time,
             end_time=self._parse_datetime(data.get("endDateTime")),
             organizer=self._parse_participant(data.get("organizer")),
-            participants=[
-                self._parse_participant(p)
-                for p in data.get("participants", [])
-            ],
-            modalities=[
-                self._parse_modality(m)
-                for m in data.get("modalities", [])
-            ],
+            participants=participants,
+            modalities=[self._parse_modality(m) for m in data.get("modalities", [])],
             version=data.get("version", 1),
             join_web_url=data.get("joinWebUrl"),
         )
@@ -210,14 +216,13 @@ class CallRecordService:
             callee=self._parse_participant(data.get("callee")),
             start_time=self._parse_datetime(data.get("startDateTime")),
             end_time=self._parse_datetime(data.get("endDateTime")),
-            modalities=[
-                self._parse_modality(m)
-                for m in data.get("modalities", [])
-            ],
+            modalities=[self._parse_modality(m) for m in data.get("modalities", [])],
             failure_info=data.get("failureInfo", {}).get("reason"),
         )
 
-    def _parse_participant(self, data: Optional[Dict[str, Any]]) -> Optional[Participant]:
+    def _parse_participant(
+        self, data: Optional[Dict[str, Any]]
+    ) -> Optional[Participant]:
         """Parse raw API data into a Participant model."""
         if not data:
             return None

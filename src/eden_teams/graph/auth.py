@@ -34,7 +34,7 @@ def get_graph_credentials() -> Optional[ClientSecretCredential]:
         )
         logger.info("Microsoft Graph credentials initialized")
         return credential
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         logger.error("Failed to initialize Graph credentials: %s", str(e))
         return None
 
@@ -71,8 +71,8 @@ class GraphAuthProvider:
 
         try:
             token = self.credential.get_token(*self._scopes)
-            return token.token
-        except Exception as e:
+            return str(token.token)
+        except (ValueError, RuntimeError) as e:
             logger.error("Failed to get access token: %s", str(e))
             return None
 

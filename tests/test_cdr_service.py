@@ -2,8 +2,7 @@
 Tests for CDR service.
 """
 
-from datetime import datetime, timedelta
-from unittest.mock import MagicMock, patch
+from datetime import datetime
 
 from eden_teams.cdr.models import CallRecord, CallType
 from eden_teams.cdr.service import CallRecordService

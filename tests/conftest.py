@@ -2,8 +2,6 @@
 Pytest configuration and fixtures.
 """
 
-from datetime import datetime, timedelta
-
 import pytest
 
 

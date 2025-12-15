@@ -74,8 +74,12 @@ class Participant(BaseModel):
     display_name: Optional[str] = Field(default=None, description="Display name")
     email: Optional[str] = Field(default=None, description="Email address")
     user_id: Optional[str] = Field(default=None, description="Azure AD user ID")
-    phone_number: Optional[str] = Field(default=None, description="Phone number if PSTN")
-    is_organizer: bool = Field(default=False, description="Whether participant organized the call")
+    phone_number: Optional[str] = Field(
+        default=None, description="Phone number if PSTN"
+    )
+    is_organizer: bool = Field(
+        default=False, description="Whether participant organized the call"
+    )
 
     @property
     def identifier(self) -> str:
@@ -87,13 +91,25 @@ class CallSession(BaseModel):
     """A session within a call (represents a call leg)."""
 
     id: str = Field(description="Unique session identifier")
-    caller: Optional[Participant] = Field(default=None, description="Caller participant")
-    callee: Optional[Participant] = Field(default=None, description="Callee participant")
-    start_time: Optional[datetime] = Field(default=None, description="Session start time")
+    caller: Optional[Participant] = Field(
+        default=None, description="Caller participant"
+    )
+    callee: Optional[Participant] = Field(
+        default=None, description="Callee participant"
+    )
+    start_time: Optional[datetime] = Field(
+        default=None, description="Session start time"
+    )
     end_time: Optional[datetime] = Field(default=None, description="Session end time")
-    modalities: List[Modality] = Field(default_factory=list, description="Communication modalities used")
-    quality: Optional[CallQuality] = Field(default=None, description="Quality metrics for this session")
-    failure_info: Optional[str] = Field(default=None, description="Failure information if call failed")
+    modalities: List[Modality] = Field(
+        default_factory=list, description="Communication modalities used"
+    )
+    quality: Optional[CallQuality] = Field(
+        default=None, description="Quality metrics for this session"
+    )
+    failure_info: Optional[str] = Field(
+        default=None, description="Failure information if call failed"
+    )
 
     @property
     def duration(self) -> Optional[timedelta]:
@@ -117,11 +133,19 @@ class CallRecord(BaseModel):
     start_time: datetime = Field(description="Call start time")
     end_time: Optional[datetime] = Field(default=None, description="Call end time")
     organizer: Optional[Participant] = Field(default=None, description="Call organizer")
-    participants: List[Participant] = Field(default_factory=list, description="All participants")
-    sessions: List[CallSession] = Field(default_factory=list, description="Call sessions/legs")
-    modalities: List[Modality] = Field(default_factory=list, description="Modalities used in call")
+    participants: List[Participant] = Field(
+        default_factory=list, description="All participants"
+    )
+    sessions: List[CallSession] = Field(
+        default_factory=list, description="Call sessions/legs"
+    )
+    modalities: List[Modality] = Field(
+        default_factory=list, description="Modalities used in call"
+    )
     version: int = Field(default=1, description="Record version")
-    join_web_url: Optional[str] = Field(default=None, description="Web URL to join meeting")
+    join_web_url: Optional[str] = Field(
+        default=None, description="Web URL to join meeting"
+    )
 
     @property
     def duration(self) -> Optional[timedelta]:

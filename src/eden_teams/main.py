@@ -81,7 +81,10 @@ def main(query: Optional[str] = None) -> int:
 
         return 0
 
-    except Exception as e:
+    except KeyboardInterrupt:
+        logger.info("Application interrupted by user")
+        return 0
+    except (OSError, RuntimeError) as e:
         logger.exception("An error occurred: %s", str(e))
         return 1
 

@@ -5,7 +5,7 @@ This module provides centralized configuration using Pydantic settings.
 """
 
 from functools import lru_cache
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
