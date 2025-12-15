@@ -109,6 +109,15 @@ python -m eden_teams.main
 eden-teams
 ```
 
+### UI/UX Roadmap
+
+We are building a shared React + Fluent UI experience that can ship both as a standalone web app and as a Teams tab:
+
+- **Core SPA (shared)** – Create React App / Vite with TypeScript, `@fluentui/react-components`, `@azure/msal-browser`, `@azure/msal-react`. Pages: Home (query console + results), Call Explorer (filters + timeline/table), Admin (health + C2 checklist). All API calls go through `eden-api`.
+- **Option A: Standalone web app** – Host the built SPA in Azure Static Web Apps (or App Service) with MSAL redirect URI `https://eden-teams-ui.<region>.azurestaticapps.net` (or custom domain) and set `REACT_APP_API_BASE` to your Container App URL.
+- **Option B: Teams app wrapper** – Host the same SPA at an HTTPS endpoint (e.g., `https://teamsui.kellzkreations.com`), add Microsoft Teams JS SDK for SSO, and package a Teams app manifest with a Personal Tab pointing to the SPA.
+- **Next steps (2025‑12‑15T19:00:06.961Z)** – Scaffold the React app, add MSAL auth + Fluent UI shell, implement the Home query console, and create the Teams app manifest so Charlie can demo inside Microsoft Teams.
+
 ### Using as a Library
 
 ```python
