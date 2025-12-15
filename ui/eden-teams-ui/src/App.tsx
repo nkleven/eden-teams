@@ -22,7 +22,7 @@ import "./styles.css";
 // Sample data for tooltips - helps users understand the expected format
 const SAMPLE_DATA = {
   tenantId: "72f988bf-86f1-41af-91ab-2d7cd011db47",
-  clientId: "1950a258-227b-4e31-a9cf-717495945fc2", 
+  clientId: "1950a258-227b-4e31-a9cf-717495945fc2",
   redirectUri: "http://localhost:5173",
   apiBase: "https://eden-api.redmushroom-c729ca5a.eastus2.azurecontainerapps.io"
 };
@@ -118,14 +118,14 @@ function ConfigurationRequired() {
                   {import.meta.env.VITE_AAD_TENANT_ID || "❌ Not set"}
                 </td>
                 <td>
-                  <Tooltip 
+                  <Tooltip
                     content={
                       <div className="tooltip-content">
                         <strong>Directory (tenant) ID</strong>
                         <p>Found in Azure Portal → Entra ID → Overview</p>
                         <code>{SAMPLE_DATA.tenantId}</code>
                       </div>
-                    } 
+                    }
                     relationship="description"
                   >
                     <span className="sample-value">{SAMPLE_DATA.tenantId.slice(0, 8)}...</span>
@@ -139,14 +139,14 @@ function ConfigurationRequired() {
                   {import.meta.env.VITE_AAD_CLIENT_ID || "❌ Not set"}
                 </td>
                 <td>
-                  <Tooltip 
+                  <Tooltip
                     content={
                       <div className="tooltip-content">
                         <strong>Application (client) ID</strong>
                         <p>Found in Azure Portal → App registrations → Your app → Overview</p>
                         <code>{SAMPLE_DATA.clientId}</code>
                       </div>
-                    } 
+                    }
                     relationship="description"
                   >
                     <span className="sample-value">{SAMPLE_DATA.clientId.slice(0, 8)}...</span>
@@ -160,14 +160,14 @@ function ConfigurationRequired() {
                   {import.meta.env.VITE_AAD_REDIRECT_URI || "⚡ Using default"}
                 </td>
                 <td>
-                  <Tooltip 
+                  <Tooltip
                     content={
                       <div className="tooltip-content">
                         <strong>Redirect URI</strong>
                         <p>Must match your App Registration's redirect URI</p>
                         <code>{SAMPLE_DATA.redirectUri}</code>
                       </div>
-                    } 
+                    }
                     relationship="description"
                   >
                     <span className="sample-value">{SAMPLE_DATA.redirectUri}</span>
@@ -181,14 +181,14 @@ function ConfigurationRequired() {
                   {import.meta.env.VITE_API_BASE || "⚠️ Not set (optional)"}
                 </td>
                 <td>
-                  <Tooltip 
+                  <Tooltip
                     content={
                       <div className="tooltip-content">
                         <strong>Backend API URL</strong>
                         <p>The Eden Teams API endpoint (Azure Container App)</p>
                         <code>{SAMPLE_DATA.apiBase}</code>
                       </div>
-                    } 
+                    }
                     relationship="description"
                   >
                     <span className="sample-value">https://eden-api...</span>
