@@ -26,7 +26,7 @@ function ConfigurationRequired() {
         <p className="config-subtitle">
           Eden Teams needs Azure AD credentials to authenticate users.
         </p>
-        
+
         <div className="config-steps">
           <h3>Setup Instructions</h3>
           <ol>
