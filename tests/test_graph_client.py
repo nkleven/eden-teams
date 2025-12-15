@@ -105,11 +105,20 @@ class TestGraphClient:
         assert len(records) == 0
         assert route.called
 
-        # Check that filters were applied
+        # Check that filters were applied correctly
         request = route.calls[0].request
         url_str = str(request.url)
         # URL encoding converts $ to %24
         assert "%24filter" in url_str or "$filter" in url_str
+        # Verify specific filter values are present
+        assert (
+            "startDateTime+ge+2024-01-01" in url_str
+            or "startDateTime ge 2024-01-01" in url_str
+        )
+        assert (
+            "startDateTime+le+2024-01-31" in url_str
+            or "startDateTime le 2024-01-31" in url_str
+        )
 
     @respx.mock
     @patch("eden_teams.graph.client.GraphAuthProvider")

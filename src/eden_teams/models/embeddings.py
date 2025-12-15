@@ -46,19 +46,18 @@ class EmbeddingsClient:
             logger.warning(
                 "ChromaDB not available. Install chromadb to use embeddings."
             )
-            self._client = None
-            self._collection = None
-            return
 
         self.collection_name = collection_name
         self.persist_directory = persist_directory
         self._client: Optional[chromadb.Client] = None
         self._collection: Optional[chromadb.Collection] = None
-        logger.info(
-            "EmbeddingsClient initialized: collection=%s, persist_dir=%s",
-            collection_name,
-            persist_directory,
-        )
+
+        if CHROMADB_AVAILABLE:
+            logger.info(
+                "EmbeddingsClient initialized: collection=%s, persist_dir=%s",
+                collection_name,
+                persist_directory,
+            )
 
     @property
     def client(self) -> Optional[chromadb.Client]:
