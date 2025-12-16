@@ -99,7 +99,9 @@ function CopyButton({ text }: { text: string }) {
 }
 
 function ConfigurationRequired() {
-  const [config, setConfig] = useState<RuntimeConfig>(() => getStoredConfig() || ENV_DEFAULTS);
+  const stored = getStoredConfig();
+  const [config, setConfig] = useState<RuntimeConfig>(() => stored || ENV_DEFAULTS);
+  const [isFirstRun, setIsFirstRun] = useState<boolean>(() => !stored);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -143,6 +145,7 @@ function ConfigurationRequired() {
     setTimeout(() => {
       setSaving(false);
       setSaved(true);
+      setIsFirstRun(false);
       // Reload the page to reinitialize MSAL with new config
       setTimeout(() => {
         window.location.reload();
@@ -154,6 +157,7 @@ function ConfigurationRequired() {
     clearConfig();
     setConfig(ENV_DEFAULTS);
     setSaved(false);
+    setIsFirstRun(true);
   };
 
   const canSave = isValidGuid(config.tenantId) && isValidGuid(config.clientId);
@@ -182,14 +186,16 @@ function ConfigurationRequired() {
                 placeholder={SAMPLE_DATA.tenantId}
                 className="config-input"
               />
-              <Tooltip content={`Use sample: ${SAMPLE_DATA.tenantId}`} relationship="label">
-                <Button
-                  size="small"
-                  appearance="subtle"
-                  icon={<Settings16Regular />}
-                  onClick={handleUseSample("tenantId")}
-                />
-              </Tooltip>
+              {isFirstRun && (
+                <Tooltip content={`Use sample: ${SAMPLE_DATA.tenantId}`} relationship="label">
+                  <Button
+                    size="small"
+                    appearance="subtle"
+                    icon={<Settings16Regular />}
+                    onClick={handleUseSample("tenantId")}
+                  />
+                </Tooltip>
+              )}
             </div>
           </Field>
 
@@ -207,14 +213,16 @@ function ConfigurationRequired() {
                 placeholder={SAMPLE_DATA.clientId}
                 className="config-input"
               />
-              <Tooltip content={`Use sample: ${SAMPLE_DATA.clientId}`} relationship="label">
-                <Button
-                  size="small"
-                  appearance="subtle"
-                  icon={<Settings16Regular />}
-                  onClick={handleUseSample("clientId")}
-                />
-              </Tooltip>
+              {isFirstRun && (
+                <Tooltip content={`Use sample: ${SAMPLE_DATA.clientId}`} relationship="label">
+                  <Button
+                    size="small"
+                    appearance="subtle"
+                    icon={<Settings16Regular />}
+                    onClick={handleUseSample("clientId")}
+                  />
+                </Tooltip>
+              )}
             </div>
           </Field>
 
@@ -241,14 +249,16 @@ function ConfigurationRequired() {
                     placeholder={SAMPLE_DATA.redirectUri}
                     className="config-input"
                   />
-                  <Tooltip content={`Use sample: ${SAMPLE_DATA.redirectUri}`} relationship="label">
-                    <Button
-                      size="small"
-                      appearance="subtle"
-                      icon={<Settings16Regular />}
-                      onClick={handleUseSample("redirectUri")}
-                    />
-                  </Tooltip>
+                  {isFirstRun && (
+                    <Tooltip content={`Use sample: ${SAMPLE_DATA.redirectUri}`} relationship="label">
+                      <Button
+                        size="small"
+                        appearance="subtle"
+                        icon={<Settings16Regular />}
+                        onClick={handleUseSample("redirectUri")}
+                      />
+                    </Tooltip>
+                  )}
                 </div>
               </Field>
 
@@ -263,14 +273,16 @@ function ConfigurationRequired() {
                     placeholder={SAMPLE_DATA.apiBase}
                     className="config-input"
                   />
-                  <Tooltip content={`Use sample: ${SAMPLE_DATA.apiBase}`} relationship="label">
-                    <Button
-                      size="small"
-                      appearance="subtle"
-                      icon={<Settings16Regular />}
-                      onClick={handleUseSample("apiBase")}
-                    />
-                  </Tooltip>
+                  {isFirstRun && (
+                    <Tooltip content={`Use sample: ${SAMPLE_DATA.apiBase}`} relationship="label">
+                      <Button
+                        size="small"
+                        appearance="subtle"
+                        icon={<Settings16Regular />}
+                        onClick={handleUseSample("apiBase")}
+                      />
+                    </Tooltip>
+                  )}
                 </div>
               </Field>
             </div>
@@ -302,13 +314,15 @@ function ConfigurationRequired() {
             >
               Use Env Defaults
             </Button>
-            <Button
-              appearance="secondary"
-              size="medium"
-              onClick={handleFillAllSamples}
-            >
-              Use Sample Values
-            </Button>
+            {isFirstRun && (
+              <Button
+                appearance="secondary"
+                size="medium"
+                onClick={handleFillAllSamples}
+              >
+                Use Sample Values
+              </Button>
+            )}
           </div>
 
           <div className="config-status" aria-label="Configuration status">
