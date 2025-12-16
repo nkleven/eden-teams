@@ -75,9 +75,10 @@ function clearConfig(): void {
 
 // Check if a value looks like a valid GUID
 function isValidGuid(value: string): boolean {
-  if (!value) return false;
+  const candidate = value.trim();
+  if (!candidate) return false;
   const guidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  return guidPattern.test(value);
+  return guidPattern.test(candidate);
 }
 
 function CopyButton({ text }: { text: string }) {
@@ -116,7 +117,8 @@ function ConfigurationRequired() {
     _: unknown,
     data: { value: string }
   ) => {
-    setConfig((prev) => ({ ...prev, [field]: data.value }));
+    const value = data.value.trim();
+    setConfig((prev) => ({ ...prev, [field]: value }));
     setSaved(false);
   };
 
