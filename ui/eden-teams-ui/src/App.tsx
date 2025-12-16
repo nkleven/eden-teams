@@ -131,6 +131,16 @@ function ConfigurationRequired() {
     setSaved(false);
   };
 
+  const handleFillAllSamples = () => {
+    setConfig({ ...SAMPLE_DATA });
+    setSaved(false);
+  };
+
+  const handleFillEnvDefaults = () => {
+    setConfig(ENV_DEFAULTS);
+    setSaved(false);
+  };
+
   const handleSaveAndContinue = () => {
     setSaving(true);
     // Save to localStorage
@@ -288,6 +298,23 @@ function ConfigurationRequired() {
               onClick={handleReset}
             >
               Reset
+            </Button>
+            <Button
+              appearance="secondary"
+              size="medium"
+              onClick={handleFillEnvDefaults}
+              disabled={
+                !ENV_DEFAULTS.tenantId || !ENV_DEFAULTS.clientId
+              }
+            >
+              Use Env Defaults
+            </Button>
+            <Button
+              appearance="secondary"
+              size="medium"
+              onClick={handleFillAllSamples}
+            >
+              Use Sample Values
             </Button>
           </div>
 
