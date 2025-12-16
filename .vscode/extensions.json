@@ -1,5 +1,6 @@
 {
     "recommendations": [
+        // Python
         "ms-python.python",
         "ms-python.vscode-pylance",
         "ms-python.black-formatter",
@@ -9,10 +10,23 @@
         "ms-python.mypy-type-checker",
         "charliermarsh.ruff",
         "njpwerner.autodocstring",
+
+        // TypeScript / React UI
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "yoavbls.pretty-ts-errors",
+        "christian-kohler.npm-intellisense",
+
+        // Config files & utilities
         "tamasfe.even-better-toml",
         "mikestead.dotenv",
         "eamodio.gitlens",
+
+        // AI assistants
         "github.copilot",
-        "github.copilot-chat"
+        "github.copilot-chat",
+
+        // Data exploration (optional)
+        "ms-toolsai.jupyter"
     ]
 }
