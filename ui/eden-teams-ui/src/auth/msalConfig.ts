@@ -35,7 +35,6 @@ const isValidGuid = (value: string | undefined): boolean => {
 export const isConfigured = isValidGuid(clientId) && isValidGuid(tenantId);
 
 if (!isConfigured) {
-  // eslint-disable-next-line no-console
   console.warn(
     "⚠️ MSAL not configured. Enter credentials in the setup wizard or set VITE_AAD_CLIENT_ID and VITE_AAD_TENANT_ID in .env file.\n" +
     "See: ui/eden-teams-ui/.env.example"

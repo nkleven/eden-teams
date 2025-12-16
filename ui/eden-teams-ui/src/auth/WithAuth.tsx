@@ -12,7 +12,6 @@ export const WithAuth = ({ children }: { children: ReactNode }) => {
 
   const handleLogin = () => {
     instance.loginRedirect(loginRequest).catch((error: unknown) => {
-      // eslint-disable-next-line no-console
       console.error("MSAL login failed", error);
     });
   };

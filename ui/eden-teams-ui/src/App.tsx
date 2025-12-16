@@ -99,20 +99,10 @@ function CopyButton({ text }: { text: string }) {
 }
 
 function ConfigurationRequired() {
-  const [config, setConfig] = useState<RuntimeConfig>(ENV_DEFAULTS);
+  const [config, setConfig] = useState<RuntimeConfig>(() => getStoredConfig() || ENV_DEFAULTS);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
-
-  // Load any existing stored config on mount
-  useEffect(() => {
-    const stored = getStoredConfig();
-    if (stored) {
-      setConfig(stored);
-    } else {
-      setConfig(ENV_DEFAULTS);
-    }
-  }, []);
 
   const handleInputChange = (field: keyof RuntimeConfig) => (
     _: unknown,

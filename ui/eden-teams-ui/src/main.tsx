@@ -13,7 +13,7 @@ const msalInstance = isConfigured
   ? new PublicClientApplication(msalConfig)
   : null;
 
-function Root() {
+export function Root() {
   // If MSAL is not configured, render App without MsalProvider
   // App.tsx will detect this and show the configuration wizard
   if (!msalInstance) {
