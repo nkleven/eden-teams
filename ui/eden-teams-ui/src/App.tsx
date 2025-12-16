@@ -320,6 +320,18 @@ function ConfigurationRequired() {
             </Button>
           </div>
 
+          <div className="config-status" aria-label="Configuration status">
+            <div className={isValidGuid(config.tenantId) ? "ok" : "warn"}>
+              Tenant ID: {isValidGuid(config.tenantId) ? "OK" : "Required"}
+            </div>
+            <div className={isValidGuid(config.clientId) ? "ok" : "warn"}>
+              Client ID: {isValidGuid(config.clientId) ? "OK" : "Required"}
+            </div>
+            <div className="note">
+              Saved values live in your browser (localStorage). "Save & Continue" reloads the app.
+            </div>
+          </div>
+
           {!canSave && (config.tenantId || config.clientId) && (
             <p className="config-validation-hint">
               <Info16Regular /> Both Tenant ID and Client ID must be valid GUIDs to continue.
@@ -356,7 +368,10 @@ function ConfigurationRequired() {
               <code>VITE_AAD_REDIRECT_URI=https://&lt;your-app&gt;.azurestaticapps.net</code>
               <code>VITE_API_BASE=https://&lt;your-api&gt;.azurecontainerapps.io</code>
             </div>
-            <p className="config-manual-note">After saving, the Static Web App restarts. Reload the site to complete setup.</p>
+            <p className="config-manual-note">
+              Note: Vite <code>VITE_*</code> values are baked in at build time. If you change SWA app settings,
+              redeploy the UI (or use this wizard/runtime config). Reload the site to complete setup.
+            </p>
           </div>
         </details>
 
@@ -382,11 +397,6 @@ function ConfigurationRequired() {
               setup guide
             </a>
           </p>
-        </div>
-
-        <div className="config-badge" aria-label="NRK123 badge">
-          <span className="config-badge-dot" aria-hidden="true" />
-          NRK123
         </div>
       </div>
     </div>
