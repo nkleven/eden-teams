@@ -39,5 +39,11 @@ Verify
 - Reload site and complete OOBE
 - Confirm AAD login and API calls succeed
 
+CSA demo polish (Dec 16, 2025)
+- OOBE includes a Production/HA checklist and a clear configuration status panel.
+- Removed the temporary NRK badge from the setup screen.
+- Clarified that Vite `VITE_*` values are build-time; SWA app settings alone won’t update an already-deployed bundle.
+- Latest production deploy URL: https://red-field-01c74191e.3.azurestaticapps.net
+
 Optional GitHub Actions
 - In SWA portal → Deployment Center → connect repo nkleven/eden-teams, branch master, app location ., output dist, build npm run build
