@@ -1,7 +1,26 @@
-const tenantId = import.meta.env.VITE_AAD_TENANT_ID;
-const clientId = import.meta.env.VITE_AAD_CLIENT_ID;
+// Storage key for runtime config (matches App.tsx)
+const CONFIG_STORAGE_KEY = "eden-teams-config";
+
+// Try to get config from localStorage first (runtime config from OOBE)
+function getRuntimeConfig(): { tenantId?: string; clientId?: string; redirectUri?: string } | null {
+  try {
+    const stored = localStorage.getItem(CONFIG_STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return null;
+}
+
+const runtimeConfig = getRuntimeConfig();
+
+// Priority: localStorage (runtime) > environment variables > defaults
+const tenantId = runtimeConfig?.tenantId || import.meta.env.VITE_AAD_TENANT_ID;
+const clientId = runtimeConfig?.clientId || import.meta.env.VITE_AAD_CLIENT_ID;
 const redirectUri =
-  import.meta.env.VITE_AAD_REDIRECT_URI || window.location.origin;
+  runtimeConfig?.redirectUri || import.meta.env.VITE_AAD_REDIRECT_URI || window.location.origin;
 
 // Check if credentials are properly configured (not placeholder values)
 const isValidGuid = (value: string | undefined): boolean => {
@@ -18,7 +37,7 @@ export const isConfigured = isValidGuid(clientId) && isValidGuid(tenantId);
 if (!isConfigured) {
   // eslint-disable-next-line no-console
   console.warn(
-    "⚠️ MSAL not configured. Set VITE_AAD_CLIENT_ID and VITE_AAD_TENANT_ID in .env file.\n" +
+    "⚠️ MSAL not configured. Enter credentials in the setup wizard or set VITE_AAD_CLIENT_ID and VITE_AAD_TENANT_ID in .env file.\n" +
     "See: ui/eden-teams-ui/.env.example"
   );
 }

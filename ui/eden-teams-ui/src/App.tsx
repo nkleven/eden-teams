@@ -3,21 +3,30 @@ import {
   webLightTheme,
   Toaster,
   useId,
-  Tooltip
+  Tooltip,
+  Input,
+  Button,
+  Label,
+  Field,
+  Spinner
 } from "@fluentui/react-components";
-import { Info16Regular, Copy16Regular } from "@fluentui/react-icons";
+import { Info16Regular, Copy16Regular, Checkmark16Regular, Settings16Regular } from "@fluentui/react-icons";
 import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
   useMsal
 } from "@azure/msal-react";
 import { Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
 import AppShell from "./components/AppShell";
 import HomePage from "./pages/HomePage";
 import CallExplorerPage from "./pages/CallExplorerPage";
 import AdminPage from "./pages/AdminPage";
 import { loginRequest, isConfigured } from "./auth/msalConfig";
 import "./styles.css";
+
+// Storage key for runtime config
+const CONFIG_STORAGE_KEY = "eden-teams-config";
 
 // Sample data for tooltips - helps users understand the expected format
 const SAMPLE_DATA = {
@@ -27,189 +36,299 @@ const SAMPLE_DATA = {
   apiBase: "https://eden-api.redmushroom-c729ca5a.eastus2.azurecontainerapps.io"
 };
 
+interface RuntimeConfig {
+  tenantId: string;
+  clientId: string;
+  redirectUri: string;
+  apiBase: string;
+}
+
+// Get stored config from localStorage
+function getStoredConfig(): RuntimeConfig | null {
+  try {
+    const stored = localStorage.getItem(CONFIG_STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return null;
+}
+
+// Save config to localStorage
+function saveConfig(config: RuntimeConfig): void {
+  localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(config));
+}
+
+// Clear stored config
+function clearConfig(): void {
+  localStorage.removeItem(CONFIG_STORAGE_KEY);
+}
+
+// Check if a value looks like a valid GUID
+function isValidGuid(value: string): boolean {
+  if (!value) return false;
+  const guidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return guidPattern.test(value);
+}
+
 function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
   const handleCopy = () => {
     navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <Tooltip content="Copy to clipboard" relationship="label">
+    <Tooltip content={copied ? "Copied!" : "Copy to clipboard"} relationship="label">
       <button className="copy-btn" onClick={handleCopy} aria-label="Copy">
-        <Copy16Regular />
+        {copied ? <Checkmark16Regular /> : <Copy16Regular />}
       </button>
     </Tooltip>
   );
 }
 
 function ConfigurationRequired() {
+  const [config, setConfig] = useState<RuntimeConfig>({
+    tenantId: "",
+    clientId: "",
+    redirectUri: window.location.origin,
+    apiBase: ""
+  });
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  // Load any existing stored config on mount
+  useEffect(() => {
+    const stored = getStoredConfig();
+    if (stored) {
+      setConfig(stored);
+    }
+  }, []);
+
+  const handleInputChange = (field: keyof RuntimeConfig) => (
+    _: unknown,
+    data: { value: string }
+  ) => {
+    setConfig((prev) => ({ ...prev, [field]: data.value }));
+    setSaved(false);
+  };
+
+  const handleUseSample = (field: keyof RuntimeConfig) => () => {
+    const sampleValues: Record<keyof RuntimeConfig, string> = {
+      tenantId: SAMPLE_DATA.tenantId,
+      clientId: SAMPLE_DATA.clientId,
+      redirectUri: SAMPLE_DATA.redirectUri,
+      apiBase: SAMPLE_DATA.apiBase
+    };
+    setConfig((prev) => ({ ...prev, [field]: sampleValues[field] }));
+    setSaved(false);
+  };
+
+  const handleSaveAndContinue = () => {
+    setSaving(true);
+    // Save to localStorage
+    saveConfig(config);
+
+    // Brief delay for UX feedback
+    setTimeout(() => {
+      setSaving(false);
+      setSaved(true);
+      // Reload the page to reinitialize MSAL with new config
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    }, 500);
+  };
+
+  const handleReset = () => {
+    clearConfig();
+    setConfig({
+      tenantId: "",
+      clientId: "",
+      redirectUri: window.location.origin,
+      apiBase: ""
+    });
+    setSaved(false);
+  };
+
+  const canSave = isValidGuid(config.tenantId) && isValidGuid(config.clientId);
+
   return (
     <div className="config-page">
       <div className="config-card">
-        <div className="config-icon">⚙️</div>
-        <h1>Configuration Required</h1>
+        <div className="config-icon">🚀</div>
+        <h1>Welcome to Eden Teams</h1>
         <p className="config-subtitle">
-          Eden Teams needs Azure AD credentials to authenticate users.
+          Let's get you set up! Enter your Azure AD credentials to get started.
         </p>
 
-        <div className="config-steps">
-          <h3>Setup Instructions</h3>
-          <ol>
-            <li>
-              <strong>Create an Azure AD App Registration</strong>
-              <span>Go to Azure Portal → Entra ID → App registrations → New registration</span>
-            </li>
-            <li>
-              <strong>Configure the redirect URI</strong>
-              <span>Add <code>http://localhost:5173</code> as a Single-page application redirect</span>
-            </li>
-            <li>
-              <strong>Copy your credentials</strong>
-              <span>Note the Application (client) ID and Directory (tenant) ID</span>
-            </li>
-            <li>
-              <strong>Create a <code>.env</code> file</strong>
-              <span>In <code>ui/eden-teams-ui/</code>, copy <code>.env.example</code> to <code>.env</code></span>
-            </li>
-            <li>
-              <strong>Set the environment variables</strong>
-              <div className="config-code">
-                <code>VITE_AAD_TENANT_ID=your-actual-tenant-guid</code>
-                <code>VITE_AAD_CLIENT_ID=your-actual-client-guid</code>
-                <code>VITE_AAD_REDIRECT_URI=http://localhost:5173</code>
-              </div>
-            </li>
-            <li>
-              <strong>Restart the dev server</strong>
-              <span>Run <code>npm run dev</code> again</span>
-            </li>
-          </ol>
+        <div className="config-form">
+          <Field
+            label="Tenant ID"
+            required
+            hint="Found in Azure Portal → Entra ID → Overview"
+            validationState={config.tenantId ? (isValidGuid(config.tenantId) ? "success" : "error") : "none"}
+            validationMessage={config.tenantId && !isValidGuid(config.tenantId) ? "Must be a valid GUID format" : undefined}
+          >
+            <div className="input-with-sample">
+              <Input
+                value={config.tenantId}
+                onChange={handleInputChange("tenantId")}
+                placeholder={SAMPLE_DATA.tenantId}
+                className="config-input"
+              />
+              <Tooltip content={`Use sample: ${SAMPLE_DATA.tenantId}`} relationship="label">
+                <Button
+                  size="small"
+                  appearance="subtle"
+                  icon={<Settings16Regular />}
+                  onClick={handleUseSample("tenantId")}
+                />
+              </Tooltip>
+            </div>
+          </Field>
+
+          <Field
+            label="Client ID"
+            required
+            hint="Found in Azure Portal → App registrations → Your app → Overview"
+            validationState={config.clientId ? (isValidGuid(config.clientId) ? "success" : "error") : "none"}
+            validationMessage={config.clientId && !isValidGuid(config.clientId) ? "Must be a valid GUID format" : undefined}
+          >
+            <div className="input-with-sample">
+              <Input
+                value={config.clientId}
+                onChange={handleInputChange("clientId")}
+                placeholder={SAMPLE_DATA.clientId}
+                className="config-input"
+              />
+              <Tooltip content={`Use sample: ${SAMPLE_DATA.clientId}`} relationship="label">
+                <Button
+                  size="small"
+                  appearance="subtle"
+                  icon={<Settings16Regular />}
+                  onClick={handleUseSample("clientId")}
+                />
+              </Tooltip>
+            </div>
+          </Field>
+
+          <div className="advanced-toggle">
+            <Button
+              appearance="transparent"
+              size="small"
+              onClick={() => setShowAdvanced(!showAdvanced)}
+            >
+              {showAdvanced ? "▼ Hide" : "▶ Show"} Advanced Settings
+            </Button>
+          </div>
+
+          {showAdvanced && (
+            <div className="advanced-fields">
+              <Field
+                label="Redirect URI"
+                hint="Must match your App Registration's redirect URI"
+              >
+                <div className="input-with-sample">
+                  <Input
+                    value={config.redirectUri}
+                    onChange={handleInputChange("redirectUri")}
+                    placeholder={SAMPLE_DATA.redirectUri}
+                    className="config-input"
+                  />
+                  <Tooltip content={`Use sample: ${SAMPLE_DATA.redirectUri}`} relationship="label">
+                    <Button
+                      size="small"
+                      appearance="subtle"
+                      icon={<Settings16Regular />}
+                      onClick={handleUseSample("redirectUri")}
+                    />
+                  </Tooltip>
+                </div>
+              </Field>
+
+              <Field
+                label="API Base URL"
+                hint="Eden Teams backend API endpoint (optional)"
+              >
+                <div className="input-with-sample">
+                  <Input
+                    value={config.apiBase}
+                    onChange={handleInputChange("apiBase")}
+                    placeholder={SAMPLE_DATA.apiBase}
+                    className="config-input"
+                  />
+                  <Tooltip content={`Use sample: ${SAMPLE_DATA.apiBase}`} relationship="label">
+                    <Button
+                      size="small"
+                      appearance="subtle"
+                      icon={<Settings16Regular />}
+                      onClick={handleUseSample("apiBase")}
+                    />
+                  </Tooltip>
+                </div>
+              </Field>
+            </div>
+          )}
+
+          <div className="config-actions">
+            <Button
+              appearance="primary"
+              size="large"
+              disabled={!canSave || saving}
+              onClick={handleSaveAndContinue}
+            >
+              {saving ? <Spinner size="tiny" /> : saved ? "✓ Saved!" : "Save & Continue"}
+            </Button>
+            <Button
+              appearance="subtle"
+              size="medium"
+              onClick={handleReset}
+            >
+              Reset
+            </Button>
+          </div>
+
+          {!canSave && (config.tenantId || config.clientId) && (
+            <p className="config-validation-hint">
+              <Info16Regular /> Both Tenant ID and Client ID must be valid GUIDs to continue.
+            </p>
+          )}
         </div>
+
+        <div className="config-divider">
+          <span>or configure manually</span>
+        </div>
+
+        <details className="config-manual">
+          <summary>📁 Set up via .env file</summary>
+          <div className="config-manual-content">
+            <p>Create a <code>.env</code> file in <code>ui/eden-teams-ui/</code> with:</p>
+            <div className="config-code template">
+              <CopyButton text={`VITE_AAD_TENANT_ID=${config.tenantId || "<your-tenant-id>"}\nVITE_AAD_CLIENT_ID=${config.clientId || "<your-client-id>"}\nVITE_AAD_REDIRECT_URI=${config.redirectUri || "http://localhost:5173"}\nVITE_API_BASE=${config.apiBase || "https://your-api.azurecontainerapps.io"}`} />
+              <code>VITE_AAD_TENANT_ID={config.tenantId || "<your-tenant-id>"}</code>
+              <code>VITE_AAD_CLIENT_ID={config.clientId || "<your-client-id>"}</code>
+              <code>VITE_AAD_REDIRECT_URI={config.redirectUri || "http://localhost:5173"}</code>
+              <code>VITE_API_BASE={config.apiBase || "https://your-api.azurecontainerapps.io"}</code>
+            </div>
+            <p className="config-manual-note">Then restart the dev server with <code>npm run dev</code></p>
+          </div>
+        </details>
 
         <div className="config-help">
           <p>
-            📖 See the{" "}
+            📖 Need help? See the{" "}
             <a
               href="https://github.com/nkleven/eden-teams#configuration"
               target="_blank"
               rel="noopener noreferrer"
             >
-              README
-            </a>{" "}
-            for detailed setup instructions.
+              setup guide
+            </a>
           </p>
-        </div>
-
-        <div className="config-current">
-          <h4>Environment Variables</h4>
-          <p className="config-hint">
-            <Info16Regular /> Hover over sample values for format examples. Click copy to use as template.
-          </p>
-          <table>
-            <thead>
-              <tr>
-                <th>Variable</th>
-                <th>Current Value</th>
-                <th>Sample</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>VITE_AAD_TENANT_ID</td>
-                <td className={import.meta.env.VITE_AAD_TENANT_ID && !import.meta.env.VITE_AAD_TENANT_ID.includes("your-") ? "set" : "missing"}>
-                  {import.meta.env.VITE_AAD_TENANT_ID || "❌ Not set"}
-                </td>
-                <td>
-                  <Tooltip
-                    content={
-                      <div className="tooltip-content">
-                        <strong>Directory (tenant) ID</strong>
-                        <p>Found in Azure Portal → Entra ID → Overview</p>
-                        <code>{SAMPLE_DATA.tenantId}</code>
-                      </div>
-                    }
-                    relationship="description"
-                  >
-                    <span className="sample-value">{SAMPLE_DATA.tenantId.slice(0, 8)}...</span>
-                  </Tooltip>
-                  <CopyButton text={`VITE_AAD_TENANT_ID=${SAMPLE_DATA.tenantId}`} />
-                </td>
-              </tr>
-              <tr>
-                <td>VITE_AAD_CLIENT_ID</td>
-                <td className={import.meta.env.VITE_AAD_CLIENT_ID && !import.meta.env.VITE_AAD_CLIENT_ID.includes("your-") ? "set" : "missing"}>
-                  {import.meta.env.VITE_AAD_CLIENT_ID || "❌ Not set"}
-                </td>
-                <td>
-                  <Tooltip
-                    content={
-                      <div className="tooltip-content">
-                        <strong>Application (client) ID</strong>
-                        <p>Found in Azure Portal → App registrations → Your app → Overview</p>
-                        <code>{SAMPLE_DATA.clientId}</code>
-                      </div>
-                    }
-                    relationship="description"
-                  >
-                    <span className="sample-value">{SAMPLE_DATA.clientId.slice(0, 8)}...</span>
-                  </Tooltip>
-                  <CopyButton text={`VITE_AAD_CLIENT_ID=${SAMPLE_DATA.clientId}`} />
-                </td>
-              </tr>
-              <tr>
-                <td>VITE_AAD_REDIRECT_URI</td>
-                <td className={import.meta.env.VITE_AAD_REDIRECT_URI ? "set" : "optional"}>
-                  {import.meta.env.VITE_AAD_REDIRECT_URI || "⚡ Using default"}
-                </td>
-                <td>
-                  <Tooltip
-                    content={
-                      <div className="tooltip-content">
-                        <strong>Redirect URI</strong>
-                        <p>Must match your App Registration's redirect URI</p>
-                        <code>{SAMPLE_DATA.redirectUri}</code>
-                      </div>
-                    }
-                    relationship="description"
-                  >
-                    <span className="sample-value">{SAMPLE_DATA.redirectUri}</span>
-                  </Tooltip>
-                  <CopyButton text={`VITE_AAD_REDIRECT_URI=${SAMPLE_DATA.redirectUri}`} />
-                </td>
-              </tr>
-              <tr>
-                <td>VITE_API_BASE</td>
-                <td className={import.meta.env.VITE_API_BASE ? "set" : "optional"}>
-                  {import.meta.env.VITE_API_BASE || "⚠️ Not set (optional)"}
-                </td>
-                <td>
-                  <Tooltip
-                    content={
-                      <div className="tooltip-content">
-                        <strong>Backend API URL</strong>
-                        <p>The Eden Teams API endpoint (Azure Container App)</p>
-                        <code>{SAMPLE_DATA.apiBase}</code>
-                      </div>
-                    }
-                    relationship="description"
-                  >
-                    <span className="sample-value">https://eden-api...</span>
-                  </Tooltip>
-                  <CopyButton text={`VITE_API_BASE=${SAMPLE_DATA.apiBase}`} />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="config-quickstart">
-          <h4>Quick Start .env Template</h4>
-          <p>Copy this template and replace with your actual values:</p>
-          <div className="config-code template">
-            <CopyButton text={`VITE_AAD_TENANT_ID=<your-tenant-id>\nVITE_AAD_CLIENT_ID=<your-client-id>\nVITE_AAD_REDIRECT_URI=http://localhost:5173\nVITE_API_BASE=https://your-api.azurecontainerapps.io`} />
-            <code>VITE_AAD_TENANT_ID=&lt;your-tenant-id&gt;</code>
-            <code>VITE_AAD_CLIENT_ID=&lt;your-client-id&gt;</code>
-            <code>VITE_AAD_REDIRECT_URI=http://localhost:5173</code>
-            <code>VITE_API_BASE=https://your-api.azurecontainerapps.io</code>
-          </div>
         </div>
       </div>
     </div>
