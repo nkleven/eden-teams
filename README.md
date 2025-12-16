@@ -12,6 +12,22 @@ Eden Teams provides tools and utilities for accessing, analyzing, and querying M
 - **Customer Lookup** - Connect customers to their Teams call history
 - **AI-Powered Insights** - Use LLMs to summarize and explain call data
 
+## Demo Checklist (CSA Ready)
+
+**Live URL:** https://red-field-01c74191e.3.azurestaticapps.net
+
+1. Open the URL in a fresh incognito/private window (clears cached config).
+2. OOBE wizard shows — status panel indicates what's needed.
+3. Click **Use Sample Values** → both status pills turn green.
+4. Click **Save & Continue** → page reloads, login screen appears.
+5. Sign in with a Microsoft account → lands on Home page.
+6. Explore Call Explorer and Admin pages (if API connected).
+
+**Known limitations for demo:**
+- API backend may be offline → API-dependent features show placeholder.
+- Config lives in browser localStorage; clearing storage resets OOBE.
+- Vite `VITE_*` values are build-time; SWA app settings alone won't change the deployed bundle (use OOBE wizard or redeploy).
+
 ## Features
 
 - 📞 Retrieve Call Detail Records from Microsoft Teams
