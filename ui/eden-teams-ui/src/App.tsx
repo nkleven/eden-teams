@@ -317,6 +317,20 @@ function ConfigurationRequired() {
           </div>
         </details>
 
+        <details className="config-manual">
+          <summary>🌐 Deployed on Azure Static Web Apps?</summary>
+          <div className="config-manual-content">
+            <p>Set these Application Settings in the Azure portal for your Static Web App:</p>
+            <div className="config-code template">
+              <code>VITE_AAD_TENANT_ID=&lt;your-tenant-id&gt;</code>
+              <code>VITE_AAD_CLIENT_ID=&lt;your-client-id&gt;</code>
+              <code>VITE_AAD_REDIRECT_URI=https://&lt;your-app&gt;.azurestaticapps.net</code>
+              <code>VITE_API_BASE=https://&lt;your-api&gt;.azurecontainerapps.io</code>
+            </div>
+            <p className="config-manual-note">After saving, the Static Web App restarts. Reload the site to complete setup.</p>
+          </div>
+        </details>
+
         <div className="config-help">
           <p>
             📖 Need help? See the{" "}
