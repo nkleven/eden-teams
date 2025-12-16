@@ -36,9 +36,10 @@ const ENV_DEFAULTS: RuntimeConfig = {
 };
 
 // Sample data for tooltips - helps users understand the expected format
+// NOTE: These are obviously-fake GUIDs for format reference only. Use your own App Registration values.
 const SAMPLE_DATA = {
-  tenantId: "72f988bf-86f1-41af-91ab-2d7cd011db47",
-  clientId: "1950a258-227b-4e31-a9cf-717495945fc2",
+  tenantId: "00000000-0000-0000-0000-000000000001",
+  clientId: "00000000-0000-0000-0000-000000000002",
   redirectUri: "http://localhost:5173",
   apiBase: "https://eden-api.redmushroom-c729ca5a.eastus2.azurecontainerapps.io"
 };
