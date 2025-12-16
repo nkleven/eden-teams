@@ -19,7 +19,7 @@ Build
 
 Deploy (SWA CLI upload)
 - cd ui/eden-teams-ui
-- npx swa deploy --env production --app-name eden-teams-ui --resource-group eden-teams-rg --subscription-id bf2dc682-be5b-4da7-91f2-1a6709ddc05b
+- npx swa deploy --env production --app-name eden-teams-ui --resource-group eden-teams-rg --subscription-id bf2dc682-be5b-4da7-91f2-1a6709ddc05b --output-location dist
 - Expect success URL: https://red-field-01c74191e.3.azurestaticapps.net
 
 Post-deploy app settings (SWA portal → Configuration → Application settings)
@@ -27,6 +27,13 @@ Post-deploy app settings (SWA portal → Configuration → Application settings)
 - VITE_AAD_CLIENT_ID = <client>
 - VITE_AAD_REDIRECT_URI = https://red-field-01c74191e.3.azurestaticapps.net
 - VITE_API_BASE = <backend API URL>
+
+Important note (Vite env vars)
+- Vite's `import.meta.env.VITE_*` values are compiled into the bundle at build time.
+- Changing Static Web App "Application settings" does not automatically update an already-deployed static bundle.
+- For production, either:
+	- Use the OOBE runtime config (localStorage) as the source of truth, OR
+	- Add a runtime config endpoint (e.g., `/api/config` or `/config.json`) and have the UI fetch it at runtime.
 
 Verify
 - Reload site and complete OOBE
