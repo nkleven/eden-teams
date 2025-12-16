@@ -360,6 +360,17 @@ function ConfigurationRequired() {
           </div>
         </details>
 
+        <div className="config-ha" aria-label="Production high availability checklist">
+          <h4>Production / HA checklist</h4>
+          <ul>
+            <li>Front Door with custom domain in front of two Static Web Apps (two regions, health probes).</li>
+            <li>API in two regions behind Front Door with a /health endpoint.</li>
+            <li>Data with geo-replication (SQL active geo-rep or Cosmos multi-region) and zone redundancy where available.</li>
+            <li>Entra redirect URIs for Front Door plus both regional SWA default URLs.</li>
+            <li>App settings (VITE_*) set in both SWA instances and API instances.</li>
+          </ul>
+        </div>
+
         <div className="config-help">
           <p>
             📖 Need help? See the{" "}

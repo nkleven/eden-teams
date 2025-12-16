@@ -181,6 +181,32 @@ body,
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
 }
 
+.config-ha {
+  margin: 20px 0 12px 0;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.config-ha h4 {
+  margin: 0 0 10px 0;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.config-ha ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #334155;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.config-ha li {
+  margin-bottom: 6px;
+}
+
 .config-current {
   border-top: 1px solid #e9ecef;
   padding-top: 20px;
