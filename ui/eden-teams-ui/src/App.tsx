@@ -27,6 +27,14 @@ import "./styles.css";
 // Storage key for runtime config
 const CONFIG_STORAGE_KEY = "eden-teams-config";
 
+// Environment defaults (used to prefill OOBE without persisting secrets)
+const ENV_DEFAULTS: RuntimeConfig = {
+  tenantId: import.meta.env.VITE_AAD_TENANT_ID || "",
+  clientId: import.meta.env.VITE_AAD_CLIENT_ID || "",
+  redirectUri: import.meta.env.VITE_AAD_REDIRECT_URI || window.location.origin,
+  apiBase: import.meta.env.VITE_API_BASE || ""
+};
+
 // Sample data for tooltips - helps users understand the expected format
 const SAMPLE_DATA = {
   tenantId: "72f988bf-86f1-41af-91ab-2d7cd011db47",
@@ -89,12 +97,7 @@ function CopyButton({ text }: { text: string }) {
 }
 
 function ConfigurationRequired() {
-  const [config, setConfig] = useState<RuntimeConfig>({
-    tenantId: "",
-    clientId: "",
-    redirectUri: window.location.origin,
-    apiBase: ""
-  });
+  const [config, setConfig] = useState<RuntimeConfig>(ENV_DEFAULTS);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -104,6 +107,8 @@ function ConfigurationRequired() {
     const stored = getStoredConfig();
     if (stored) {
       setConfig(stored);
+    } else {
+      setConfig(ENV_DEFAULTS);
     }
   }, []);
 
@@ -144,12 +149,7 @@ function ConfigurationRequired() {
 
   const handleReset = () => {
     clearConfig();
-    setConfig({
-      tenantId: "",
-      clientId: "",
-      redirectUri: window.location.origin,
-      apiBase: ""
-    });
+    setConfig(ENV_DEFAULTS);
     setSaved(false);
   };
 
