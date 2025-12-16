@@ -159,6 +159,28 @@ body,
   text-decoration: underline;
 }
 
+.config-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin: 0 auto 8px auto;
+  background: #eef2ff;
+  color: #334155;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.config-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+}
+
 .config-current {
   border-top: 1px solid #e9ecef;
   padding-top: 20px;

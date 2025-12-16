@@ -372,6 +372,11 @@ function ConfigurationRequired() {
             </a>
           </p>
         </div>
+
+        <div className="config-badge" aria-label="NRK123 badge">
+          <span className="config-badge-dot" aria-hidden="true" />
+          NRK123
+        </div>
       </div>
     </div>
   );
