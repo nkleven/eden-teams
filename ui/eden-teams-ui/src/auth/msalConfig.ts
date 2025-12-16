@@ -1,6 +1,13 @@
 // Storage key for runtime config (matches App.tsx)
 const CONFIG_STORAGE_KEY = "eden-teams-config";
 
+// Disallow known sample/first-party IDs that cause AADSTS errors
+const DISALLOWED_TENANTS = ["00000000-0000-0000-0000-000000000001"];
+const DISALLOWED_CLIENTS = [
+  "00000000-0000-0000-0000-000000000002",
+  "1950a258-227a-4e31-a9cf-717495945fc2"
+];
+
 // Try to get config from localStorage first (runtime config from OOBE)
 function getRuntimeConfig(): { tenantId?: string; clientId?: string; redirectUri?: string } | null {
   try {
@@ -23,16 +30,24 @@ const redirectUri =
   runtimeConfig?.redirectUri || import.meta.env.VITE_AAD_REDIRECT_URI || window.location.origin;
 
 // Check if credentials are properly configured (not placeholder values)
-const isValidGuid = (value: string | undefined): boolean => {
+const isDisallowedTenant = (value: string | undefined): boolean => {
+  return value ? DISALLOWED_TENANTS.includes(value.trim().toLowerCase()) : false;
+};
+
+const isDisallowedClient = (value: string | undefined): boolean => {
+  return value ? DISALLOWED_CLIENTS.includes(value.trim().toLowerCase()) : false;
+};
+
+const isValidGuid = (value: string | undefined, disallow: (v: string | undefined) => boolean): boolean => {
   if (!value) return false;
-  // Check it's not a placeholder
   if (value.includes("your-") || value === "common") return false;
-  // Basic GUID format check
+  if (disallow(value)) return false;
   const guidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   return guidPattern.test(value);
 };
 
-export const isConfigured = isValidGuid(clientId) && isValidGuid(tenantId);
+export const isConfigured =
+  isValidGuid(clientId, isDisallowedClient) && isValidGuid(tenantId, isDisallowedTenant);
 
 if (!isConfigured) {
   console.warn(
