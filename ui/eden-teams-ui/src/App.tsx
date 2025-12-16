@@ -16,7 +16,7 @@ import {
   useMsal
 } from "@azure/msal-react";
 import { Routes, Route } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AppShell from "./components/AppShell";
 import HomePage from "./pages/HomePage";
 import CallExplorerPage from "./pages/CallExplorerPage";
