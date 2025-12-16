@@ -35,6 +35,13 @@ const ENV_DEFAULTS: RuntimeConfig = {
   apiBase: import.meta.env.VITE_API_BASE || ""
 };
 
+// Reject known sample or first-party IDs to avoid accidental misuse
+const DISALLOWED_TENANTS = ["00000000-0000-0000-0000-000000000001"];
+const DISALLOWED_CLIENTS = [
+  "00000000-0000-0000-0000-000000000002",
+  "1950a258-227a-4e31-a9cf-717495945fc2" // Microsoft first-party client often cached from samples
+];
+
 // Sample data for tooltips - helps users understand the expected format
 // NOTE: These are obviously-fake GUIDs for format reference only. Use your own App Registration values.
 const SAMPLE_DATA = {
@@ -80,6 +87,14 @@ function isValidGuid(value: string): boolean {
   if (!candidate) return false;
   const guidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   return guidPattern.test(candidate);
+}
+
+function isDisallowedTenant(value: string): boolean {
+  return DISALLOWED_TENANTS.includes(value.trim().toLowerCase());
+}
+
+function isDisallowedClient(value: string): boolean {
+  return DISALLOWED_CLIENTS.includes(value.trim().toLowerCase());
 }
 
 function CopyButton({ text }: { text: string }) {
@@ -160,7 +175,9 @@ function ConfigurationRequired() {
     setIsFirstRun(true);
   };
 
-  const canSave = isValidGuid(config.tenantId) && isValidGuid(config.clientId);
+  const tenantOk = isValidGuid(config.tenantId) && !isDisallowedTenant(config.tenantId.toLowerCase());
+  const clientOk = isValidGuid(config.clientId) && !isDisallowedClient(config.clientId.toLowerCase());
+  const canSave = tenantOk && clientOk;
 
   return (
     <div className="config-page">
@@ -177,7 +194,13 @@ function ConfigurationRequired() {
             required
             hint="Found in Azure Portal → Entra ID → Overview"
             validationState={config.tenantId ? (isValidGuid(config.tenantId) ? "success" : "error") : "none"}
-            validationMessage={config.tenantId && !isValidGuid(config.tenantId) ? "Must be a valid GUID format" : undefined}
+            validationMessage={
+              config.tenantId && !isValidGuid(config.tenantId)
+                ? "Must be a valid GUID format"
+                : config.tenantId && isDisallowedTenant(config.tenantId)
+                  ? "Do not use sample tenant IDs"
+                  : undefined
+            }
           >
             <div className="input-with-sample">
               <Input
@@ -204,7 +227,13 @@ function ConfigurationRequired() {
             required
             hint="Found in Azure Portal → App registrations → Your app → Overview"
             validationState={config.clientId ? (isValidGuid(config.clientId) ? "success" : "error") : "none"}
-            validationMessage={config.clientId && !isValidGuid(config.clientId) ? "Must be a valid GUID format" : undefined}
+            validationMessage={
+              config.clientId && !isValidGuid(config.clientId)
+                ? "Must be a valid GUID format"
+                : config.clientId && isDisallowedClient(config.clientId)
+                  ? "Do not use sample or Microsoft first-party client IDs"
+                  : undefined
+            }
           >
             <div className="input-with-sample">
               <Input
@@ -326,11 +355,11 @@ function ConfigurationRequired() {
           </div>
 
           <div className="config-status" aria-label="Configuration status">
-            <div className={isValidGuid(config.tenantId) ? "ok" : "warn"}>
-              Tenant ID: {isValidGuid(config.tenantId) ? "OK" : "Required"}
+            <div className={tenantOk ? "ok" : "warn"}>
+              Tenant ID: {tenantOk ? "OK" : "Required"}
             </div>
-            <div className={isValidGuid(config.clientId) ? "ok" : "warn"}>
-              Client ID: {isValidGuid(config.clientId) ? "OK" : "Required"}
+            <div className={clientOk ? "ok" : "warn"}>
+              Client ID: {clientOk ? "OK" : "Required"}
             </div>
             <div className="note">
               Saved values live in your browser (localStorage). "Save & Continue" reloads the app.
@@ -339,7 +368,10 @@ function ConfigurationRequired() {
 
           {!canSave && (config.tenantId || config.clientId) && (
             <p className="config-validation-hint">
-              <Info16Regular /> Both Tenant ID and Client ID must be valid GUIDs to continue.
+              <Info16Regular />
+              {(!tenantOk || !clientOk)
+                ? " Enter real Tenant and Client IDs (no samples or Microsoft first-party IDs)."
+                : " Both Tenant ID and Client ID must be valid GUIDs to continue."}
             </p>
           )}
         </div>
