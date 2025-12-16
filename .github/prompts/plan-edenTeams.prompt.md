@@ -47,3 +47,8 @@ CSA demo polish (Dec 16, 2025)
 
 Optional GitHub Actions
 - In SWA portal → Deployment Center → connect repo nkleven/eden-teams, branch master, app location ., output dist, build npm run build
+
+Punch list (Christmas)
+- Ensure MSAL uses real AAD app IDs (tenant/client). Clear localStorage key `eden-teams-config` to avoid cached sample IDs.
+- Verify .env (local) uses `VITE_AAD_TENANT_ID`, `VITE_AAD_CLIENT_ID=afc76f3f-fc66-4acf-a571-274f89ab1c1c`, `VITE_AAD_REDIRECT_URI=http://localhost:5173`; rebuild if changing VITE_*.
+- Confirm AAD app registration has SPA redirect URIs for local (`http://localhost:5173`) and prod (`https://red-field-01c74191e.3.azurestaticapps.net`).
