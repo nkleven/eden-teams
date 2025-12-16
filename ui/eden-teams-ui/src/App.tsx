@@ -391,6 +391,16 @@ function ConfigurationRequired() {
           </ul>
         </div>
 
+        <div className="config-ha" aria-label="Bootstrap checklist">
+          <h4>Bootstrap (first run)</h4>
+          <ul>
+            <li>App registration: add SPA redirect URIs for local (http://localhost:5173) and prod (https://red-field-01c74191e.3.azurestaticapps.net).</li>
+            <li>Real IDs only: use your tenant GUID and client ID (no samples or Microsoft app IDs).</li>
+            <li>Local env: set VITE_AAD_TENANT_ID, VITE_AAD_CLIENT_ID, VITE_AAD_REDIRECT_URI; restart dev server after edits.</li>
+            <li>Cached config: if you ever see 1950a258-*, clear localStorage key eden-teams-config or use incognito.</li>
+          </ul>
+        </div>
+
         <div className="config-help">
           <p>
             📖 Need help? See the{" "}
