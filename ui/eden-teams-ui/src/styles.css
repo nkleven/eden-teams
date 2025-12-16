@@ -159,26 +159,46 @@ body,
   text-decoration: underline;
 }
 
-.config-badge {
-  display: inline-flex;
+.config-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  margin: 0 auto 8px auto;
-  background: #eef2ff;
-  color: #334155;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
 }
 
-.config-badge-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #6366f1;
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+.config-status > div {
+  font-size: 0.9rem;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.config-status .ok {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+  font-weight: 600;
+}
+
+.config-status .warn {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #9a3412;
+  font-weight: 600;
+}
+
+.config-status .note {
+  flex-basis: 100%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 400;
 }
 
 .config-ha {
