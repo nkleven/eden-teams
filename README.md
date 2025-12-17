@@ -16,6 +16,8 @@ Eden Teams provides tools and utilities for accessing, analyzing, and querying M
 > 4. Explore Home → Call Explorer → Admin. If you ever see sample IDs, clear localStorage key `eden-teams-config` or use a fresh private window.
 
 > 💻 **Need local demo?** Use `http://localhost:5173` as the redirect URI, ensure it’s in your App Registration, run `npm run dev`, and repeat steps 1-4 with the local URL.
+>
+> 🔗 If you hit a redirect URI mismatch, register the exact URI you’re using (prod or local) in Azure App Registration → Authentication. Reference: https://aka.ms/redirectUriMismatchError
 
 - **Microsoft Graph API Integration** - Fetch call records from Microsoft Teams
 - **Natural Language Queries** - Ask questions about call data in plain English
