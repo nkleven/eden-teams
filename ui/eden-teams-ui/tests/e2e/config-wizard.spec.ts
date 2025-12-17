@@ -73,7 +73,15 @@ test.describe("First-run configuration", () => {
         if (!stored) return false;
         try {
           const parsed = JSON.parse(stored) as { tenantId?: string; clientId?: string };
-          return Boolean(parsed.tenantId && parsed.clientId);
+          const guid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+          return Boolean(
+            parsed.tenantId &&
+              parsed.clientId &&
+              parsed.tenantId !== "invalid" &&
+              parsed.clientId !== "invalid" &&
+              guid.test(parsed.tenantId) &&
+              guid.test(parsed.clientId)
+          );
         } catch {
           return false;
         }
