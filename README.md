@@ -28,6 +28,23 @@ Eden Teams provides tools and utilities for accessing, analyzing, and querying M
 - Config lives in browser localStorage; clearing storage resets OOBE.
 - Vite `VITE_*` values are build-time; SWA app settings alone won't change the deployed bundle (use OOBE wizard or redeploy).
 
+## CSA Roadshow Playbook (auth-hardened)
+
+- **Prod demo (fastest):**
+    1) Open https://red-field-01c74191e.3.azurestaticapps.net in incognito.
+    2) Click **Reset**. Enter Tenant ID `5f3c1aa9-26ac-4a91-9b3c-e9ad544ba967`, your real SPA Client ID, and Redirect URI matching your app registration (prod URL above).
+    3) Save & Continue → sign in. Sample/1950a258 IDs are blocked.
+
+- **Local demo:**
+    1) `cd ui/eden-teams-ui && npm install && npm run dev`
+    2) Create `.env` with `VITE_AAD_TENANT_ID=5f3c1aa9-26ac-4a91-9b3c-e9ad544ba967`, your SPA Client ID, `VITE_AAD_REDIRECT_URI=http://localhost:5173`, plus `VITE_API_BASE` if available.
+    3) Open http://localhost:5173 in incognito, Reset, Save & Continue, sign in.
+
+- **Troubleshooting:**
+    - Clear stale config: DevTools → Application/Storage → Local Storage → remove `eden-teams-config`, or use incognito.
+    - Redirect mismatch: ensure Redirect URI in the app registration matches the URL you are using (prod SWA or localhost).
+    - Sample IDs blocked: wizard shows errors if `1950a258-*` or placeholder GUIDs are present.
+
 ## Features
 
 - 📞 Retrieve Call Detail Records from Microsoft Teams
