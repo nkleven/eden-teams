@@ -1,25 +1,9 @@
 import { test, expect } from "@playwright/test";
-import fs from "node:fs";
 
 const CONFIG_STORAGE_KEY = "eden-teams-config";
 
 const VALID_TENANT_ID = "11111111-1111-1111-1111-111111111111";
 const VALID_CLIENT_ID = "22222222-2222-2222-2222-222222222222";
-
-function readDotEnvValue(key: string): string | undefined {
-  try {
-    const content = fs.readFileSync(".env", "utf8");
-    const line = content
-      .split(/\r?\n/)
-      .map((l) => l.trim())
-      .find((l) => l && !l.startsWith("#") && l.startsWith(`${key}=`));
-    if (!line) return undefined;
-    const value = line.substring(`${key}=`.length).trim();
-    return value.replace(/^"|"$/g, "").replace(/^'|'$/g, "");
-  } catch {
-    return undefined;
-  }
-}
 
 test.describe("First-run configuration", () => {
   test("shows configuration wizard when not configured", async ({ page }) => {
@@ -65,12 +49,17 @@ test.describe("First-run configuration", () => {
 
     await page.goto("/");
 
-    const envTenant = readDotEnvValue("VITE_AAD_TENANT_ID");
-    const envClient = readDotEnvValue("VITE_AAD_CLIENT_ID");
-    const hasRealEnvDefaults = Boolean(envTenant && envClient);
-
-    await page.locator("input#tenantId").fill(envTenant ?? VALID_TENANT_ID);
-    await page.locator("input#clientId").fill(envClient ?? VALID_CLIENT_ID);
+    const useEnvDefaults = page.getByRole("button", { name: "Use Env Defaults" });
+    const hasEnvDefaults = await useEnvDefaults.isEnabled();
+    if (hasEnvDefaults) {
+      await useEnvDefaults.click();
+      // Wait for the fields to update away from the forced invalid values.
+      await expect(page.locator("input#tenantId")).not.toHaveValue("invalid");
+      await expect(page.locator("input#clientId")).not.toHaveValue("invalid");
+    } else {
+      await page.locator("input#tenantId").fill(VALID_TENANT_ID);
+      await page.locator("input#clientId").fill(VALID_CLIENT_ID);
+    }
 
     const saveButton = page.getByRole("button", { name: "Save & Continue" });
     await expect(saveButton).toBeEnabled();
@@ -96,7 +85,7 @@ test.describe("First-run configuration", () => {
     await page.reload({ waitUntil: "domcontentloaded" });
 
     // If real env defaults exist, MSAL should initialize and show the login page.
-    if (hasRealEnvDefaults) {
+    if (hasEnvDefaults) {
       await expect(
         page.getByRole("button", { name: "Sign in with Microsoft" })
       ).toBeVisible();
@@ -107,8 +96,10 @@ test.describe("First-run configuration", () => {
       (key) => window.localStorage.getItem(key),
       CONFIG_STORAGE_KEY
     );
-    expect(stored).toContain(envTenant ?? VALID_TENANT_ID);
-    expect(stored).toContain(envClient ?? VALID_CLIENT_ID);
+    if (!hasEnvDefaults) {
+      expect(stored).toContain(VALID_TENANT_ID);
+      expect(stored).toContain(VALID_CLIENT_ID);
+    }
 
     // Optional: ensure redirectUri isn't empty if present in storage.
     if (baseURL) {
