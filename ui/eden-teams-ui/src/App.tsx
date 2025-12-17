@@ -17,7 +17,7 @@ import {
   useMsal
 } from "@azure/msal-react";
 import { Routes, Route } from "react-router-dom";
-import { Suspense, lazy, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import AppShell from "./components/AppShell";
 import { loginRequest, isConfigured } from "./auth/msalConfig";
 import "./styles.css";
@@ -98,15 +98,26 @@ function getStoredConfig(): RuntimeConfig | null {
   return null;
 }
 
-function getActiveConfig(): RuntimeConfig {
-  return getStoredConfig() || ENV_DEFAULTS;
-}
-
 const truncate = (value: string, keep: number = 6) => {
   if (!value) return "";
   if (value.length <= keep * 2 + 1) return value;
   return `${value.slice(0, keep)}…${value.slice(-keep)}`;
 };
+
+const isRuntimeConfigValid = (config: RuntimeConfig | null): boolean => {
+  if (!config) return false;
+  const tenantOk = isValidGuid(config.tenantId) && !isDisallowedTenant(config.tenantId);
+  const clientOk = isValidGuid(config.clientId) && !isDisallowedClient(config.clientId);
+  return tenantOk && clientOk;
+};
+
+function getActiveConfig(): RuntimeConfig {
+  const stored = getStoredConfig();
+  if (isRuntimeConfigValid(stored)) {
+    return stored as RuntimeConfig;
+  }
+  return ENV_DEFAULTS;
+}
 
 // Save config to localStorage
 function saveConfig(config: RuntimeConfig): void {
@@ -514,40 +525,75 @@ function GuidedSteps() {
   );
 }
 
+type HealthStatus = "checking" | "ok" | "fail";
+
 function DeploymentDashboard({ show }: { show: boolean }) {
-  if (!show) return null;
+  const [swaStatus, setSwaStatus] = useState<HealthStatus>("checking");
+  const [customStatus, setCustomStatus] = useState<HealthStatus>("checking");
+  const [apiStatus, setApiStatus] = useState<HealthStatus>("checking");
   const config = getActiveConfig();
+
+  useEffect(() => {
+    const check = async (url: string, setStatus: (v: HealthStatus) => void) => {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+        await fetch(url, { method: "HEAD", mode: "no-cors", signal: controller.signal });
+        clearTimeout(timeout);
+        setStatus("ok");
+      } catch {
+        setStatus("fail");
+      }
+    };
+
+    check(SWA_URL, setSwaStatus);
+    check(CUSTOM_DOMAIN, setCustomStatus);
+    if (config.apiBase) {
+      check(config.apiBase, setApiStatus);
+    } else {
+      setApiStatus("fail");
+    }
+  }, [config.apiBase]);
+
+  if (!show) return null;
+
   const items = [
     {
       title: "Static Web App",
-      status: "Healthy",
+      status: swaStatus,
       detail: "Production deployed",
       link: SWA_URL
     },
     {
       title: "Custom domain",
-      status: "Configured",
+      status: customStatus,
       detail: "teams.kellskreations.com",
       link: CUSTOM_DOMAIN
     },
     {
       title: "AAD redirects",
-      status: "Configured",
+      status: "ok" as HealthStatus,
       detail: "Local + prod + custom domain"
     },
     {
       title: "API base",
-      status: config.apiBase ? "Set" : "Optional",
+      status: config.apiBase ? apiStatus : "fail",
       detail: config.apiBase || "Not provided"
     }
   ];
 
+  const statusLabel = (status: HealthStatus) => {
+    if (status === "checking") return "Checking";
+    if (status === "ok") return "Healthy";
+    return "Issue";
+  };
+
   return (
     <div className="deploy-grid" aria-label="Deployment status">
       {items.map((item) => (
-        <div key={item.title} className="deploy-card">
+        <div key={item.title} className={`deploy-card status-${item.status}`}>
           <div className="deploy-header">
-            <span className="deploy-status">{item.status}</span>
+            <span className={`deploy-status status-${item.status}`}>{statusLabel(item.status)}</span>
             <strong>{item.title}</strong>
           </div>
           <div className="deploy-detail">
@@ -565,7 +611,7 @@ function DeploymentDashboard({ show }: { show: boolean }) {
 
 function AuthenticatedApp() {
   const toasterId = useId("toaster");
-  const hasRuntimeConfig = Boolean(getStoredConfig());
+  const hasRuntimeConfig = isRuntimeConfigValid(getStoredConfig());
   return (
     <>
       <Toaster toasterId={toasterId} />
@@ -592,7 +638,7 @@ function AuthenticatedApp() {
 }
 
 function App() {
-  const hasRuntimeConfig = Boolean(getStoredConfig());
+  const hasRuntimeConfig = isRuntimeConfigValid(getStoredConfig());
   // Show configuration page if AAD is not properly configured
   if (!isConfigured && !hasRuntimeConfig) {
     return (
