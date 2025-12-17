@@ -6,6 +6,17 @@ A Python application for connecting customers to Microsoft Teams Call Detail Rec
 
 Eden Teams provides tools and utilities for accessing, analyzing, and querying Microsoft Teams Call Detail Records. It supports:
 
+> ⚡️ **CSA Lightning Quickstart (≈2 minutes)**
+> 1. Open https://red-field-01c74191e.3.azurestaticapps.net in an incognito window.
+> 2. Click **Reset** in the wizard, then paste:
+>    - Tenant ID: `5f3c1aa9-26ac-4a91-9b3c-e9ad544ba967`
+>    - Client ID: `your real SPA client ID (e.g., acd0540d-613b-4b36-9be3-0495ad9b835f)`
+>    - Redirect URI: `https://red-field-01c74191e.3.azurestaticapps.net`
+> 3. Hit **Save & Continue** → sign in with your Microsoft account.
+> 4. Explore Home → Call Explorer → Admin. If you ever see sample IDs, clear localStorage key `eden-teams-config` or use a fresh private window.
+
+> 💻 **Need local demo?** Use `http://localhost:5173` as the redirect URI, ensure it’s in your App Registration, run `npm run dev`, and repeat steps 1-4 with the local URL.
+
 - **Microsoft Graph API Integration** - Fetch call records from Microsoft Teams
 - **Natural Language Queries** - Ask questions about call data in plain English
 - **Call Analytics** - Analyze call patterns, duration, quality metrics
