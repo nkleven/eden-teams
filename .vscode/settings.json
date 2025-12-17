@@ -94,5 +94,8 @@
     "terminal.integrated.defaultProfile.windows": "PowerShell",
     "terminal.integrated.shellIntegration.enabled": true,
     "terminal.integrated.shellIntegration.suggestEnabled": true,
-    "terminal.integrated.enableBell": false
+    "accessibility.signals.terminalBell": {
+        "sound": "off"
+    },
+    "terminal.integrated.enableVisualBell": false
 }

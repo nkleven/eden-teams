@@ -8,7 +8,7 @@ Eden Teams provides tools and utilities for accessing, analyzing, and querying M
 
 > ⚡️ **CSA Lightning Quickstart (≈2 minutes)**
 > 1. Open https://red-field-01c74191e.3.azurestaticapps.net in an incognito window.
-> 2. Click **Reset** in the wizard, then paste:
+> 2. Click **Reset** (optional), then simply hit **One-click Start** (defaults already filled) or review & keep the values below:
 >    - Tenant ID: `5f3c1aa9-26ac-4a91-9b3c-e9ad544ba967`
 >    - Client ID: `your real SPA client ID (e.g., acd0540d-613b-4b36-9be3-0495ad9b835f)`
 >    - Redirect URI: `https://red-field-01c74191e.3.azurestaticapps.net`

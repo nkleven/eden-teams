@@ -358,10 +358,6 @@ body,
   font-size: 0.9rem;
   color: #333;
 }
-  border-radius: 8px;
-  margin-bottom: 1.25rem;
-  line-height: 1.5;
-}
 
 .config-quickstart > p {
   margin: 0 0 12px 0;

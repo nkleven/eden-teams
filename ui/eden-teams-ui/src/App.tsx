@@ -3,31 +3,28 @@ import {
   webLightTheme,
   Toaster,
   useId,
-  const handleSaveAndContinue = (nextConfig?: RuntimeConfig) => {
-    setSaving(true);
-    const pendingConfig = nextConfig ?? config;
-    const normalizedConfig: RuntimeConfig = {
-      ...pendingConfig,
-      redirectUri: normalizeRedirectUri(pendingConfig.redirectUri)
-    };
+  Tooltip,
+  Input,
+  Button,
+  Field,
+  Spinner
+} from "@fluentui/react-components";
+import { Info16Regular, Copy16Regular, Checkmark16Regular } from "@fluentui/react-icons";
+import {
+  AuthenticatedTemplate,
+  UnauthenticatedTemplate,
+  useMsal
+} from "@azure/msal-react";
+import { Routes, Route } from "react-router-dom";
+import { useState } from "react";
+import AppShell from "./components/AppShell";
+import HomePage from "./pages/HomePage";
+import CallExplorerPage from "./pages/CallExplorerPage";
+import AdminPage from "./pages/AdminPage";
+import { loginRequest, isConfigured } from "./auth/msalConfig";
+import "./styles.css";
 
-    saveConfig(normalizedConfig);
-    setConfig(normalizedConfig);
-
-    // Brief delay for UX feedback
-    setTimeout(() => {
-      setSaving(false);
-      setSaved(true);
-      // Reload the page to reinitialize MSAL with new config
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
-    }, 500);
-  };
 // Storage key for runtime config
-  const handleQuickStart = () => {
-    handleSaveAndContinue(ENV_DEFAULTS);
-  };
 const CONFIG_STORAGE_KEY = "eden-teams-config";
 
 const getRedirectDefault = (): string => {
@@ -136,14 +133,6 @@ function CopyButton({ text }: { text: string }) {
       </button>
     </Tooltip>
   );
-            <Button
-              appearance="primary"
-              size="medium"
-              onClick={handleQuickStart}
-              disabled={saving}
-            >
-              One-click Start
-            </Button>
 }
 
 function ConfigurationRequired() {
@@ -167,11 +156,11 @@ function ConfigurationRequired() {
     setSaved(false);
   };
 
-  const handleSaveAndContinue = () => {
+  const persistConfig = (pendingConfig: RuntimeConfig) => {
     setSaving(true);
     const normalizedConfig: RuntimeConfig = {
-      ...config,
-      redirectUri: normalizeRedirectUri(config.redirectUri)
+      ...pendingConfig,
+      redirectUri: normalizeRedirectUri(pendingConfig.redirectUri)
     };
 
     // Save to localStorage
@@ -187,6 +176,14 @@ function ConfigurationRequired() {
         window.location.reload();
       }, 500);
     }, 500);
+  };
+
+  const handleSaveAndContinue = () => {
+    persistConfig(config);
+  };
+
+  const handleQuickStart = () => {
+    persistConfig(ENV_DEFAULTS);
   };
 
   const handleReset = () => {
@@ -301,6 +298,14 @@ function ConfigurationRequired() {
               onClick={handleSaveAndContinue}
             >
               {saving ? <Spinner size="tiny" /> : saved ? "✓ Saved!" : "Save & Continue"}
+            </Button>
+            <Button
+              appearance="primary"
+              size="medium"
+              onClick={handleQuickStart}
+              disabled={saving}
+            >
+              One-click Start
             </Button>
             <Button
               appearance="subtle"
