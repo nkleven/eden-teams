@@ -9,7 +9,9 @@ export default defineConfig({
       output: {
         manualChunks: {
           react: ["react", "react-dom"],
-          fluent: ["@fluentui/react-components", "@fluentui/react-icons", "@fluentui/react-datepicker-compat"],
+          fluent: ["@fluentui/react-components"],
+          "fluent-icons": ["@fluentui/react-icons"],
+          "fluent-datepicker": ["@fluentui/react-datepicker-compat"],
           msal: ["@azure/msal-react", "@azure/msal-browser"]
         }
       }

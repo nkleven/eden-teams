@@ -124,8 +124,9 @@ const HomePage = ({ toasterId }: HomePageProps) => {
           </div>
           <div style={{ display: "flex", gap: "12px" }}>
             <div>
-              <Label>Start date</Label>
+              <Label htmlFor="startDate">Start date</Label>
               <DatePicker
+                id="startDate"
                 value={startDate}
                 onSelectDate={(date: Date | null | undefined) =>
                   setStartDate(date ?? undefined)
@@ -133,8 +134,9 @@ const HomePage = ({ toasterId }: HomePageProps) => {
               />
             </div>
             <div>
-              <Label>End date</Label>
+              <Label htmlFor="endDate">End date</Label>
               <DatePicker
+                id="endDate"
                 value={endDate}
                 onSelectDate={(date: Date | null | undefined) =>
                   setEndDate(date ?? undefined)

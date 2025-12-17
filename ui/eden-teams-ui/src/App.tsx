@@ -17,7 +17,7 @@ import {
   useMsal
 } from "@azure/msal-react";
 import { Routes, Route } from "react-router-dom";
-import { Suspense, lazy, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import AppShell from "./components/AppShell";
 import { loginRequest, isConfigured } from "./auth/msalConfig";
 import "./styles.css";
@@ -48,10 +48,10 @@ const normalizeRedirectUri = (value: string): string => {
   return value;
 };
 
-// Environment defaults - prefilled for CSA convenience
+// Environment defaults - ONLY from env (avoid baking tenant/client IDs into the bundle)
 const ENV_DEFAULTS: RuntimeConfig = {
-  tenantId: import.meta.env.VITE_AAD_TENANT_ID || "5f3c1aa9-26ac-4a91-9b3c-e9ad544ba967",
-  clientId: import.meta.env.VITE_AAD_CLIENT_ID || "acd0540d-613b-4b36-9be3-0495ad9b835f",
+  tenantId: import.meta.env.VITE_AAD_TENANT_ID || "",
+  clientId: import.meta.env.VITE_AAD_CLIENT_ID || "",
   redirectUri: normalizeRedirectUri(getRedirectDefault()),
   apiBase: import.meta.env.VITE_API_BASE || ""
 };
@@ -154,7 +154,12 @@ function CopyButton({ text }: { text: string }) {
   };
   return (
     <Tooltip content={copied ? "Copied!" : "Copy to clipboard"} relationship="label">
-      <button className="copy-btn" onClick={handleCopy} aria-label="Copy">
+      <button
+        type="button"
+        className="copy-btn"
+        onClick={handleCopy}
+        aria-label="Copy"
+      >
         {copied ? <Checkmark16Regular /> : <Copy16Regular />}
       </button>
     </Tooltip>
@@ -167,6 +172,13 @@ function ConfigurationRequired() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const envDefaultsValid = isRuntimeConfigValid(ENV_DEFAULTS);
+  const tenantInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    // Focus the first input to reduce tabbing on first run.
+    tenantInputRef.current?.focus();
+  }, []);
 
   const handleInputChange = (field: keyof RuntimeConfig) => (
     _: unknown,
@@ -205,10 +217,16 @@ function ConfigurationRequired() {
   };
 
   const handleSaveAndContinue = () => {
+    if (!canSave) {
+      return;
+    }
     persistConfig(config);
   };
 
   const handleQuickStart = () => {
+    if (!envDefaultsValid) {
+      return;
+    }
     persistConfig(ENV_DEFAULTS);
   };
 
@@ -225,17 +243,33 @@ function ConfigurationRequired() {
   return (
     <div className="config-page">
       <div className="config-card">
-        <div className="config-icon">🚀</div>
+        <div className="config-icon" aria-hidden="true">
+          🚀
+        </div>
         <h1>Welcome to Eden Teams</h1>
         <p className="config-subtitle">
           Let's get you set up! Enter your Azure AD credentials to get started.
         </p>
 
-        <div className="config-quickstart" role="status" aria-live="polite">
-          <strong>✅ You're almost done:</strong> Values are pre-filled. Just review (or keep) the defaults and press <strong>Save & Continue</strong>. That's it!
-        </div>
+        {envDefaultsValid ? (
+          <div className="config-quickstart" role="status" aria-live="polite">
+            <strong>✅ You're almost done:</strong> Values are pre-filled from your environment. Just review and press <strong>Save & Continue</strong>.
+          </div>
+        ) : (
+          <div className="config-quickstart" role="status" aria-live="polite">
+            <strong>✅ Quick setup:</strong> Paste your Tenant ID + Client ID below and press <strong>Save & Continue</strong>.
+          </div>
+        )}
 
-        <div className="config-form">
+        <form
+          className="config-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!saving && canSave) {
+              handleSaveAndContinue();
+            }
+          }}
+        >
           <Field
             label="Tenant ID"
             required
@@ -250,6 +284,7 @@ function ConfigurationRequired() {
             }
           >
             <Input
+              ref={tenantInputRef}
               value={config.tenantId}
               onChange={handleInputChange("tenantId")}
               placeholder={PLACEHOLDER_HINTS.tenantId}
@@ -282,6 +317,7 @@ function ConfigurationRequired() {
             <Button
               appearance="transparent"
               size="small"
+              type="button"
               onClick={() => setShowAdvanced(!showAdvanced)}
             >
               {showAdvanced ? "▼ Hide" : "▶ Show"} Advanced Settings
@@ -321,7 +357,7 @@ function ConfigurationRequired() {
               appearance="primary"
               size="large"
               disabled={!canSave || saving}
-              onClick={handleSaveAndContinue}
+              type="submit"
             >
               {saving ? <Spinner size="tiny" /> : saved ? "✓ Saved!" : "Save & Continue"}
             </Button>
@@ -329,7 +365,8 @@ function ConfigurationRequired() {
               appearance="primary"
               size="medium"
               onClick={handleQuickStart}
-              disabled={saving}
+              disabled={saving || !envDefaultsValid}
+              type="button"
             >
               One-click Start
             </Button>
@@ -337,6 +374,7 @@ function ConfigurationRequired() {
               appearance="subtle"
               size="medium"
               onClick={handleReset}
+              type="button"
             >
               Reset
             </Button>
@@ -347,6 +385,7 @@ function ConfigurationRequired() {
               disabled={
                 !ENV_DEFAULTS.tenantId || !ENV_DEFAULTS.clientId
               }
+              type="button"
             >
               Use Env Defaults
             </Button>
@@ -372,7 +411,7 @@ function ConfigurationRequired() {
                 : " Both Tenant ID and Client ID must be valid GUIDs to continue."}
             </p>
           )}
-        </div>
+        </form>
 
         <div className="config-divider">
           <span>or configure manually</span>
@@ -455,6 +494,7 @@ function LoginPage() {
       <h1>Eden Teams</h1>
       <p>Microsoft Teams CDR Assistant</p>
       <button
+        type="button"
         className="login-button"
         onClick={() => instance.loginPopup(loginRequest)}
       >

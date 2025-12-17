@@ -44,8 +44,9 @@ const CallExplorerPage = () => {
         <CardHeader header={<Subtitle2>Filters</Subtitle2>} />
         <div className={styles.filters}>
           <div>
-            <Label>User</Label>
+            <Label htmlFor="filterUser">User</Label>
             <Input
+              id="filterUser"
               value={filters.user}
               onChange={(_: unknown, data: { value: string }) =>
                 setFilters((prev) => ({ ...prev, user: data.value }))
@@ -54,8 +55,9 @@ const CallExplorerPage = () => {
             />
           </div>
           <div>
-            <Label>Modality</Label>
+            <Label htmlFor="filterModality">Modality</Label>
             <Input
+              id="filterModality"
               value={filters.modality}
               onChange={(_: unknown, data: { value: string }) =>
                 setFilters((prev) => ({ ...prev, modality: data.value }))
@@ -64,8 +66,9 @@ const CallExplorerPage = () => {
             />
           </div>
           <div>
-            <Label>Start date</Label>
+            <Label htmlFor="filterStartDate">Start date</Label>
             <DatePicker
+              id="filterStartDate"
               value={filters.start}
               onSelectDate={(date: Date | null | undefined) =>
                 setFilters((prev) => ({ ...prev, start: date ?? undefined }))
@@ -73,8 +76,9 @@ const CallExplorerPage = () => {
             />
           </div>
           <div>
-            <Label>End date</Label>
+            <Label htmlFor="filterEndDate">End date</Label>
             <DatePicker
+              id="filterEndDate"
               value={filters.end}
               onSelectDate={(date: Date | null | undefined) =>
                 setFilters((prev) => ({ ...prev, end: date ?? undefined }))

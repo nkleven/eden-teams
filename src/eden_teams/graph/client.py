@@ -6,7 +6,7 @@ Microsoft Graph API endpoints.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -172,13 +172,25 @@ class GraphClient:
         Returns:
             List of matching user dictionaries.
         """
+        query_escaped = self._escape_odata_string(query)
         endpoint = "/users"
         params = {
-            "$filter": f"startswith(displayName, '{query}') or startswith(mail, '{query}')",
+            "$filter": (
+                "startswith(displayName, '"
+                + query_escaped
+                + "') or startswith(mail, '"
+                + query_escaped
+                + "')"
+            ),
             "$top": 10,
         }
         response = self.get(endpoint, params)
         return response.get("value", [])
+
+    @staticmethod
+    def _escape_odata_string(value: str) -> str:
+        """Escape a string literal for inclusion in an OData filter."""
+        return value.replace("'", "''")
 
     def close(self) -> None:
         """Close the HTTP client."""

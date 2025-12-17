@@ -37,10 +37,20 @@ const AdminPage = () => {
         <Card>
           <CardHeader header={<Subtitle2>Enterprise C2 checklist</Subtitle2>} />
           <div className={styles.checklist}>
-            <Text>- Managed identity for eden-api</Text>
-            <Text>- Secrets stored in Key Vault</Text>
-            <Text>- Log Analytics workspace attached</Text>
-            <Text>- Alerts for Graph / OpenAI latency</Text>
+            <ul style={{ margin: 0, paddingLeft: "18px" }}>
+              <li>
+                <Text>Managed identity for eden-api</Text>
+              </li>
+              <li>
+                <Text>Secrets stored in Key Vault</Text>
+              </li>
+              <li>
+                <Text>Log Analytics workspace attached</Text>
+              </li>
+              <li>
+                <Text>Alerts for Graph / OpenAI latency</Text>
+              </li>
+            </ul>
           </div>
           <Button
             appearance="secondary"

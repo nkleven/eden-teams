@@ -9,6 +9,7 @@ import {
 } from "@fluentui/react-components";
 import type { SelectTabData, SelectTabEvent } from "@fluentui/react-components";
 import type { ReactNode } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMsal } from "@azure/msal-react";
 
@@ -50,9 +51,18 @@ const AppShell = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const { accounts } = useMsal();
   const user = accounts[0];
+  const mainRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    // Move focus to main content on route change for better SR/keyboard UX
+    mainRef.current?.focus();
+  }, [location.pathname]);
 
   return (
     <div className={styles.root}>
+      <a className="skip-link" href="#main-content">
+        Skip to main content
+      </a>
       <aside className={styles.sidebar}>
         <div className={styles.logo}>
           <Text weight="semibold" size={500}>
@@ -62,19 +72,21 @@ const AppShell = ({ children }: { children: ReactNode }) => {
             Microsoft Teams CDR Assistant
           </Text>
         </div>
-        <TabList
-          selectedValue={location.pathname}
-          vertical
-          onTabSelect={(_event: SelectTabEvent, data: SelectTabData) =>
-            navigate(String(data.value))
-          }
-        >
-          {tabs.map((tab) => (
-            <Tab key={tab.value} value={tab.value}>
-              {tab.label}
-            </Tab>
-          ))}
-        </TabList>
+        <nav aria-label="Primary navigation">
+          <TabList
+            selectedValue={location.pathname}
+            vertical
+            onTabSelect={(_event: SelectTabEvent, data: SelectTabData) =>
+              navigate(String(data.value))
+            }
+          >
+            {tabs.map((tab) => (
+              <Tab key={tab.value} value={tab.value}>
+                {tab.label}
+              </Tab>
+            ))}
+          </TabList>
+        </nav>
         {user && (
           <div style={{ marginTop: "auto", display: "flex", gap: "8px" }}>
             <Avatar name={user.name} />
@@ -85,7 +97,14 @@ const AppShell = ({ children }: { children: ReactNode }) => {
           </div>
         )}
       </aside>
-      <main className={styles.main}>{children}</main>
+      <main
+        id="main-content"
+        className={styles.main}
+        tabIndex={-1}
+        ref={mainRef}
+      >
+        {children}
+      </main>
     </div>
   );
 };
