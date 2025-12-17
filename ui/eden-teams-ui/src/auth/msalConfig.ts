@@ -23,11 +23,29 @@ function getRuntimeConfig(): { tenantId?: string; clientId?: string; redirectUri
 
 const runtimeConfig = getRuntimeConfig();
 
+// Normalize redirect URIs to avoid https://localhost mismatches (AAD requires http on localhost)
+const normalizeRedirectUri = (uri: string | undefined): string => {
+  if (!uri) return window.location.origin;
+  try {
+    const url = new URL(uri);
+    if (url.hostname === "localhost") {
+      url.protocol = "http:";
+      if (!url.port) {
+        url.port = "5173"; // default Vite dev port
+      }
+    }
+    // Trim trailing slash for consistency
+    return url.toString().replace(/\/$/, "");
+  } catch {
+    return window.location.origin;
+  }
+};
+
 // Priority: localStorage (runtime) > environment variables > defaults
 const tenantId = runtimeConfig?.tenantId || import.meta.env.VITE_AAD_TENANT_ID;
 const clientId = runtimeConfig?.clientId || import.meta.env.VITE_AAD_CLIENT_ID;
-const redirectUri =
-  runtimeConfig?.redirectUri || import.meta.env.VITE_AAD_REDIRECT_URI || window.location.origin;
+const rawRedirectUri = runtimeConfig?.redirectUri || import.meta.env.VITE_AAD_REDIRECT_URI || window.location.origin;
+const redirectUri = normalizeRedirectUri(rawRedirectUri);
 
 // Check if credentials are properly configured (not placeholder values)
 const isDisallowedTenant = (value: string | undefined): boolean => {
