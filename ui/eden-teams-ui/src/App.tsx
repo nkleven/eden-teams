@@ -27,11 +27,30 @@ import "./styles.css";
 // Storage key for runtime config
 const CONFIG_STORAGE_KEY = "eden-teams-config";
 
+const getRedirectDefault = (): string => {
+  const envRedirect = import.meta.env.VITE_AAD_REDIRECT_URI;
+  if (envRedirect) {
+    return envRedirect;
+  }
+  if (window.location.hostname === "localhost") {
+    return "http://localhost:5173";
+  }
+  return window.location.origin;
+};
+
+const normalizeRedirectUri = (value: string): string => {
+  if (!value) return value;
+  if (window.location.hostname === "localhost" && value.startsWith("https://")) {
+    return value.replace(/^https:\/\//i, "http://");
+  }
+  return value;
+};
+
 // Environment defaults - prefilled for CSA convenience
 const ENV_DEFAULTS: RuntimeConfig = {
   tenantId: import.meta.env.VITE_AAD_TENANT_ID || "5f3c1aa9-26ac-4a91-9b3c-e9ad544ba967",
   clientId: import.meta.env.VITE_AAD_CLIENT_ID || "acd0540d-613b-4b36-9be3-0495ad9b835f",
-  redirectUri: import.meta.env.VITE_AAD_REDIRECT_URI || window.location.origin,
+  redirectUri: normalizeRedirectUri(getRedirectDefault()),
   apiBase: import.meta.env.VITE_API_BASE || ""
 };
 
@@ -62,7 +81,11 @@ function getStoredConfig(): RuntimeConfig | null {
   try {
     const stored = localStorage.getItem(CONFIG_STORAGE_KEY);
     if (stored) {
-      return JSON.parse(stored);
+      const parsed: RuntimeConfig = JSON.parse(stored);
+      return {
+        ...parsed,
+        redirectUri: normalizeRedirectUri(parsed.redirectUri)
+      };
     }
   } catch {
     // Ignore parse errors
@@ -135,8 +158,14 @@ function ConfigurationRequired() {
 
   const handleSaveAndContinue = () => {
     setSaving(true);
+    const normalizedConfig: RuntimeConfig = {
+      ...config,
+      redirectUri: normalizeRedirectUri(config.redirectUri)
+    };
+
     // Save to localStorage
-    saveConfig(config);
+    saveConfig(normalizedConfig);
+    setConfig(normalizedConfig);
 
     // Brief delay for UX feedback
     setTimeout(() => {
