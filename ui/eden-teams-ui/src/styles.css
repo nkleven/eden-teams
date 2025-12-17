@@ -65,6 +65,49 @@ body,
   background: #ecfdf3;
 }
 
+.deploy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.deploy-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.deploy-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.deploy-status {
+  font-size: 0.85rem;
+  color: #0f9d58;
+  background: #ecfdf3;
+  border: 1px solid #bbf7d0;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-weight: 600;
+}
+
+.deploy-detail a,
+.deploy-detail span {
+  color: #0f172a;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.deploy-detail a:hover {
+  text-decoration: underline;
+}
+
 .route-loading {
   display: flex;
   justify-content: center;

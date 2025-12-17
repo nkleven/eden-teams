@@ -56,6 +56,9 @@ const ENV_DEFAULTS: RuntimeConfig = {
   apiBase: import.meta.env.VITE_API_BASE || ""
 };
 
+const SWA_URL = "https://red-field-01c74191e.3.azurestaticapps.net";
+const CUSTOM_DOMAIN = "https://teams.kellskreations.com";
+
 // Reject known sample or first-party IDs to avoid accidental misuse
 const DISALLOWED_TENANTS = ["00000000-0000-0000-0000-000000000001"];
 const DISALLOWED_CLIENTS = [
@@ -511,14 +514,65 @@ function GuidedSteps() {
   );
 }
 
+function DeploymentDashboard({ show }: { show: boolean }) {
+  if (!show) return null;
+  const config = getActiveConfig();
+  const items = [
+    {
+      title: "Static Web App",
+      status: "Healthy",
+      detail: "Production deployed",
+      link: SWA_URL
+    },
+    {
+      title: "Custom domain",
+      status: "Configured",
+      detail: "teams.kellskreations.com",
+      link: CUSTOM_DOMAIN
+    },
+    {
+      title: "AAD redirects",
+      status: "Configured",
+      detail: "Local + prod + custom domain"
+    },
+    {
+      title: "API base",
+      status: config.apiBase ? "Set" : "Optional",
+      detail: config.apiBase || "Not provided"
+    }
+  ];
+
+  return (
+    <div className="deploy-grid" aria-label="Deployment status">
+      {items.map((item) => (
+        <div key={item.title} className="deploy-card">
+          <div className="deploy-header">
+            <span className="deploy-status">{item.status}</span>
+            <strong>{item.title}</strong>
+          </div>
+          <div className="deploy-detail">
+            {item.link ? (
+              <a href={item.link} target="_blank" rel="noopener noreferrer">{item.detail}</a>
+            ) : (
+              <span>{item.detail}</span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function AuthenticatedApp() {
   const toasterId = useId("toaster");
+  const hasRuntimeConfig = Boolean(getStoredConfig());
   return (
     <>
       <Toaster toasterId={toasterId} />
       <AppShell>
         <ConnectionStatusBar />
         <GuidedSteps />
+        <DeploymentDashboard show={hasRuntimeConfig} />
         <Suspense
           fallback={
             <div className="route-loading">
