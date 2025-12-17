@@ -27,10 +27,10 @@ import "./styles.css";
 // Storage key for runtime config
 const CONFIG_STORAGE_KEY = "eden-teams-config";
 
-// Environment defaults (used to prefill OOBE without persisting secrets)
+// Environment defaults - prefilled for CSA convenience
 const ENV_DEFAULTS: RuntimeConfig = {
-  tenantId: import.meta.env.VITE_AAD_TENANT_ID || "",
-  clientId: import.meta.env.VITE_AAD_CLIENT_ID || "",
+  tenantId: import.meta.env.VITE_AAD_TENANT_ID || "5f3c1aa9-26ac-4a91-9b3c-e9ad544ba967",
+  clientId: import.meta.env.VITE_AAD_CLIENT_ID || "acd0540d-613b-4b36-9be3-0495ad9b835f",
   redirectUri: import.meta.env.VITE_AAD_REDIRECT_URI || window.location.origin,
   apiBase: import.meta.env.VITE_API_BASE || ""
 };
