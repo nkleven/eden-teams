@@ -285,6 +285,7 @@ function ConfigurationRequired() {
           >
             <Input
               ref={tenantInputRef}
+              id="tenantId"
               value={config.tenantId}
               onChange={handleInputChange("tenantId")}
               placeholder={PLACEHOLDER_HINTS.tenantId}
@@ -306,6 +307,7 @@ function ConfigurationRequired() {
             }
           >
             <Input
+              id="clientId"
               value={config.clientId}
               onChange={handleInputChange("clientId")}
               placeholder={PLACEHOLDER_HINTS.clientId}

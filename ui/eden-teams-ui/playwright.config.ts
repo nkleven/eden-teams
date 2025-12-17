@@ -4,6 +4,7 @@ const port = Number(process.env.E2E_PORT ?? 5173);
 const baseURL = process.env.E2E_BASE_URL ?? `http://127.0.0.1:${port}`;
 
 const edgeCanaryPath = process.env.EDGE_CANARY_PATH;
+const headless = process.env.PW_HEADFUL === "1" ? false : true;
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -15,7 +16,7 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL,
-    headless: process.env.CI ? true : false,
+    headless: process.env.CI ? true : headless,
     viewport: { width: 1280, height: 800 },
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
