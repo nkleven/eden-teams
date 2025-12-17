@@ -197,6 +197,10 @@ function ConfigurationRequired() {
           Let's get you set up! Enter your Azure AD credentials to get started.
         </p>
 
+        <div className="config-quickstart" role="status" aria-live="polite">
+          <strong>✅ You're almost done:</strong> Values are pre-filled. Just review (or keep) the defaults and press <strong>Save & Continue</strong>. That's it!
+        </div>
+
         <div className="config-form">
           <Field
             label="Tenant ID"
