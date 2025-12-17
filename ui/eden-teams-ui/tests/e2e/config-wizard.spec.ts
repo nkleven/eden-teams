@@ -10,6 +10,11 @@ test.describe("First-run configuration", () => {
     // Force the app into the setup wizard, even if .env provides valid IDs.
     await page.addInitScript(
       ({ key }) => {
+        const flag = "eden-teams-e2e-forced";
+        if (window.sessionStorage.getItem(flag)) {
+          return;
+        }
+        window.sessionStorage.setItem(flag, "1");
         window.localStorage.setItem(
           key,
           JSON.stringify({ tenantId: "invalid", clientId: "invalid" })
@@ -39,6 +44,11 @@ test.describe("First-run configuration", () => {
     // Start from the wizard state.
     await page.addInitScript(
       ({ key }) => {
+        const flag = "eden-teams-e2e-forced";
+        if (window.sessionStorage.getItem(flag)) {
+          return;
+        }
+        window.sessionStorage.setItem(flag, "1");
         window.localStorage.setItem(
           key,
           JSON.stringify({ tenantId: "invalid", clientId: "invalid" })
