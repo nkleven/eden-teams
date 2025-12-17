@@ -10,6 +10,68 @@ body,
   background-color: #f5f5f5;
 }
 
+.status-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  align-items: center;
+  background: #0b5cff;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 20px rgba(11, 92, 255, 0.15);
+}
+
+.status-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.status-pill span {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.status-pill strong {
+  font-size: 1rem;
+}
+
+.status-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.guided-steps {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.guided-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.guided-step.done {
+  border-color: #bbf7d0;
+  background: #ecfdf3;
+}
+
+.route-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 0;
+}
+
 .login-page {
   display: flex;
   flex-direction: column;

@@ -55,6 +55,12 @@ const HomePage = ({ toasterId }: HomePageProps) => {
   const [answer, setAnswer] = useState<string | null>(null);
   const { dispatchToast } = useToastController(toasterId);
 
+  const exampleQuestions = [
+    "Summarize Teams call quality issues for sales last week",
+    "Which users had the highest drop rates yesterday?",
+    "List top 5 long-duration calls this month"
+  ];
+
   const handleSubmit = async () => {
     if (!question.trim()) {
       dispatchToast(
@@ -78,7 +84,7 @@ const HomePage = ({ toasterId }: HomePageProps) => {
       dispatchToast(
         <Toast>
           <ToastTitle>
-            {(error as Error)?.message ?? "Failed to query call records."}
+            {(error as Error)?.message ?? "Failed to query call records. Check API base and auth."}
           </ToastTitle>
         </Toast>,
         { position: "top-end" }
@@ -139,6 +145,21 @@ const HomePage = ({ toasterId }: HomePageProps) => {
           <Button appearance="primary" onClick={handleSubmit} disabled={loading}>
             {loading ? <Spinner size="tiny" /> : "Ask"}
           </Button>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            {exampleQuestions.map((sample) => (
+              <Button
+                key={sample}
+                size="small"
+                appearance="secondary"
+                onClick={() => {
+                  setQuestion(sample);
+                  setAnswer(null);
+                }}
+              >
+                {sample}
+              </Button>
+            ))}
+          </div>
         </div>
       </Card>
       <div className={styles.results}>
@@ -155,9 +176,10 @@ const HomePage = ({ toasterId }: HomePageProps) => {
             </div>
           )}
           {!loading && !answer && (
-            <div style={{ padding: "16px" }}>
-              <Text size={200}>
-                Results will appear here after you submit a question.
+            <div style={{ padding: "24px" }}>
+              <Subtitle2>Ask your first question</Subtitle2>
+              <Text size={200} block>
+                Use the samples above or type your own. We will query Teams CDRs and summarize results here.
               </Text>
             </div>
           )}

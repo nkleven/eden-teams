@@ -7,7 +7,8 @@ import {
   Input,
   Button,
   Field,
-  Spinner
+  Spinner,
+  Badge
 } from "@fluentui/react-components";
 import { Info16Regular, Copy16Regular, Checkmark16Regular } from "@fluentui/react-icons";
 import {
@@ -16,13 +17,14 @@ import {
   useMsal
 } from "@azure/msal-react";
 import { Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { Suspense, lazy, useMemo, useState } from "react";
 import AppShell from "./components/AppShell";
-import HomePage from "./pages/HomePage";
-import CallExplorerPage from "./pages/CallExplorerPage";
-import AdminPage from "./pages/AdminPage";
 import { loginRequest, isConfigured } from "./auth/msalConfig";
 import "./styles.css";
+
+const HomePage = lazy(() => import("./pages/HomePage"));
+const CallExplorerPage = lazy(() => import("./pages/CallExplorerPage"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
 
 // Storage key for runtime config
 const CONFIG_STORAGE_KEY = "eden-teams-config";
@@ -92,6 +94,16 @@ function getStoredConfig(): RuntimeConfig | null {
   }
   return null;
 }
+
+function getActiveConfig(): RuntimeConfig {
+  return getStoredConfig() || ENV_DEFAULTS;
+}
+
+const truncate = (value: string, keep: number = 6) => {
+  if (!value) return "";
+  if (value.length <= keep * 2 + 1) return value;
+  return `${value.slice(0, keep)}…${value.slice(-keep)}`;
+};
 
 // Save config to localStorage
 function saveConfig(config: RuntimeConfig): void {
@@ -438,17 +450,88 @@ function LoginPage() {
   );
 }
 
+function ConnectionStatusBar() {
+  const config = getActiveConfig();
+  const tenantDisplay = truncate(config.tenantId);
+  const clientDisplay = truncate(config.clientId);
+
+  const handleReset = () => {
+    clearConfig();
+    window.location.reload();
+  };
+
+  return (
+    <div className="status-bar" role="status">
+      <div className="status-pill">
+        <Badge appearance="filled" color="brand" shape="rounded">Connected</Badge>
+        <span>Tenant</span>
+        <strong>{tenantDisplay}</strong>
+      </div>
+      <div className="status-pill">
+        <Badge appearance="ghost" color="brand" shape="rounded">App</Badge>
+        <span>Client ID</span>
+        <strong>{clientDisplay}</strong>
+      </div>
+      <div className="status-pill">
+        <Badge appearance="ghost" color="brand" shape="rounded">Redirect</Badge>
+        <span>{config.redirectUri}</span>
+      </div>
+      <div className="status-actions">
+        <Button size="small" appearance="secondary" onClick={handleReset}>
+          Edit config
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function GuidedSteps() {
+  const { accounts } = useMsal();
+  const config = getActiveConfig();
+  const steps = useMemo(
+    () => [
+      { label: "Sign in", done: accounts.length > 0 },
+      { label: "Configure tenant", done: Boolean(config.tenantId && config.clientId) },
+      { label: "Explore calls", done: false }
+    ],
+    [accounts.length, config.clientId, config.tenantId]
+  );
+
+  return (
+    <div className="guided-steps" aria-label="Quick checklist">
+      {steps.map((step) => (
+        <div key={step.label} className={`guided-step ${step.done ? "done" : "todo"}`}>
+          <Badge appearance={step.done ? "filled" : "ghost"} color={step.done ? "success" : "brand"}>
+            {step.done ? "Done" : "Next"}
+          </Badge>
+          <span>{step.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function AuthenticatedApp() {
   const toasterId = useId("toaster");
   return (
     <>
       <Toaster toasterId={toasterId} />
       <AppShell>
-        <Routes>
-          <Route path="/" element={<HomePage toasterId={toasterId} />} />
-          <Route path="/calls" element={<CallExplorerPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-        </Routes>
+        <ConnectionStatusBar />
+        <GuidedSteps />
+        <Suspense
+          fallback={
+            <div className="route-loading">
+              <Spinner label="Loading experience..." />
+            </div>
+          }
+        >
+          <Routes>
+            <Route path="/" element={<HomePage toasterId={toasterId} />} />
+            <Route path="/calls" element={<CallExplorerPage />} />
+            <Route path="/admin" element={<AdminPage />} />
+          </Routes>
+        </Suspense>
       </AppShell>
     </>
   );

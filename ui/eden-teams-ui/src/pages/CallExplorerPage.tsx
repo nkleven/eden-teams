@@ -112,6 +112,11 @@ const CallExplorerPage = () => {
         <Text size={200} style={{ padding: "12px" }}>
           Hook the table up to eden-api once the timeline endpoint is available.
         </Text>
+        <div style={{ padding: "12px", background: "#f8fafc", borderRadius: 8, border: "1px dashed #e2e8f0" }}>
+          <Text size={200}>
+            No live data yet? Run a query in Home, then wire this to the API timeline endpoint to show real calls.
+          </Text>
+        </div>
       </Card>
     </div>
   );
