@@ -538,8 +538,9 @@ function AuthenticatedApp() {
 }
 
 function App() {
+  const hasRuntimeConfig = Boolean(getStoredConfig());
   // Show configuration page if AAD is not properly configured
-  if (!isConfigured) {
+  if (!isConfigured && !hasRuntimeConfig) {
     return (
       <FluentProvider theme={webLightTheme}>
         <ConfigurationRequired />
