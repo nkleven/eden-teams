@@ -1,0 +1,69 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e5]:
+  - generic [ref=e6]: 🚀
+  - heading "Welcome to Eden Teams" [level=1] [ref=e7]
+  - paragraph [ref=e8]: Let's get you set up! Enter your Azure AD credentials to get started.
+  - status [ref=e9]:
+    - strong [ref=e10]: "✅ You're almost done:"
+    - text: Values are pre-filled from your environment. Just review and press
+    - strong [ref=e11]: Save & Continue
+    - text: .
+  - generic [ref=e12]:
+    - generic [ref=e13]:
+      - generic [ref=e14]: Tenant ID*
+      - textbox "Tenant ID" [active] [ref=e16]:
+        - /placeholder: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        - text: invalid
+      - alert [ref=e17]:
+        - img [ref=e19]
+        - text: Must be a valid GUID format
+      - generic [ref=e21]: Found in Azure Portal → Entra ID → Overview
+    - generic [ref=e22]:
+      - generic [ref=e23]: Client ID*
+      - textbox "Client ID" [ref=e25]:
+        - /placeholder: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        - text: invalid
+      - alert [ref=e26]:
+        - img [ref=e28]
+        - text: Must be a valid GUID format
+      - generic [ref=e30]: Found in Azure Portal → App registrations → Your app → Overview
+    - button "▶ Show Advanced Settings" [ref=e32] [cursor=pointer]
+    - generic [ref=e33]:
+      - button "Save & Continue" [disabled] [ref=e34]
+      - button "One-click Start" [ref=e35] [cursor=pointer]
+      - button "Reset" [ref=e36] [cursor=pointer]
+      - button "Use Env Defaults" [ref=e37] [cursor=pointer]
+    - generic "Configuration status" [ref=e38]:
+      - generic [ref=e39]: "Tenant ID: Required"
+      - generic [ref=e40]: "Client ID: Required"
+      - generic [ref=e41]: Saved values live in your browser (localStorage). "Save & Continue" reloads the app.
+    - paragraph [ref=e42]:
+      - img [ref=e43]
+      - text: Enter real Tenant and Client IDs (no samples or Microsoft first-party IDs).
+  - generic [ref=e46]: or configure manually
+  - group [ref=e47] [cursor=pointer]:
+    - generic "📁 Set up via .env file" [ref=e48]
+  - group [ref=e49] [cursor=pointer]:
+    - generic "🌐 Deployed on Azure Static Web Apps?" [ref=e50]
+  - generic "Production high availability checklist" [ref=e51]:
+    - heading "Production / HA checklist" [level=4] [ref=e52]
+    - list [ref=e53]:
+      - listitem [ref=e54]: Front Door with custom domain in front of two Static Web Apps (two regions, health probes).
+      - listitem [ref=e55]: API in two regions behind Front Door with a /health endpoint.
+      - listitem [ref=e56]: Data with geo-replication (SQL active geo-rep or Cosmos multi-region) and zone redundancy where available.
+      - listitem [ref=e57]: Entra redirect URIs for Front Door plus both regional SWA default URLs.
+      - listitem [ref=e58]: App settings (VITE_*) set in both SWA instances and API instances.
+  - generic "Bootstrap checklist" [ref=e59]:
+    - heading "Bootstrap (first run)" [level=4] [ref=e60]
+    - list [ref=e61]:
+      - listitem [ref=e62]: "App registration: add SPA redirect URIs for local (http://localhost:5173) and prod (https://red-field-01c74191e.3.azurestaticapps.net)."
+      - listitem [ref=e63]: "Real IDs only: use your tenant GUID and client ID (no samples or Microsoft app IDs)."
+      - listitem [ref=e64]: "Local env: set VITE_AAD_TENANT_ID, VITE_AAD_CLIENT_ID, VITE_AAD_REDIRECT_URI; restart dev server after edits."
+      - listitem [ref=e65]: "Cached config: if you ever see 1950a258-*, clear localStorage key eden-teams-config or use incognito."
+  - paragraph [ref=e67]:
+    - text: 📖 Need help? See the
+    - link "setup guide" [ref=e68] [cursor=pointer]:
+      - /url: https://github.com/nkleven/eden-teams#configuration
+```
