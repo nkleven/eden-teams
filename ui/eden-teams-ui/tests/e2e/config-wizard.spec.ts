@@ -10,7 +10,10 @@ test.describe("First-run configuration", () => {
     // Force the app into the setup wizard, even if .env provides valid IDs.
     await page.addInitScript(
       ({ key }) => {
-        window.localStorage.setItem(key, JSON.stringify({ tenantId: "", clientId: "" }));
+        window.localStorage.setItem(
+          key,
+          JSON.stringify({ tenantId: "invalid", clientId: "invalid" })
+        );
       },
       { key: CONFIG_STORAGE_KEY }
     );
@@ -36,7 +39,10 @@ test.describe("First-run configuration", () => {
     // Start from the wizard state.
     await page.addInitScript(
       ({ key }) => {
-        window.localStorage.setItem(key, JSON.stringify({ tenantId: "", clientId: "" }));
+        window.localStorage.setItem(
+          key,
+          JSON.stringify({ tenantId: "invalid", clientId: "invalid" })
+        );
       },
       { key: CONFIG_STORAGE_KEY }
     );
