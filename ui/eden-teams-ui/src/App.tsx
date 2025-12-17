@@ -9,7 +9,7 @@ import {
   Field,
   Spinner
 } from "@fluentui/react-components";
-import { Info16Regular, Copy16Regular, Checkmark16Regular, Settings16Regular } from "@fluentui/react-icons";
+import { Info16Regular, Copy16Regular, Checkmark16Regular } from "@fluentui/react-icons";
 import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
@@ -42,13 +42,12 @@ const DISALLOWED_CLIENTS = [
   "1950a258-227a-4e31-a9cf-717495945fc2" // Microsoft first-party client often cached from samples
 ];
 
-// Sample data for tooltips - helps users understand the expected format
-// NOTE: These are obviously-fake GUIDs for format reference only. Use your own App Registration values.
-const SAMPLE_DATA = {
-  tenantId: "00000000-0000-0000-0000-000000000001",
-  clientId: "00000000-0000-0000-0000-000000000002",
+// Placeholder hints for input fields
+const PLACEHOLDER_HINTS = {
+  tenantId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  clientId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
   redirectUri: "http://localhost:5173",
-  apiBase: "https://eden-api.redmushroom-c729ca5a.eastus2.azurecontainerapps.io"
+  apiBase: "https://your-api.azurecontainerapps.io"
 };
 
 interface RuntimeConfig {
@@ -116,7 +115,6 @@ function CopyButton({ text }: { text: string }) {
 function ConfigurationRequired() {
   const stored = getStoredConfig();
   const [config, setConfig] = useState<RuntimeConfig>(() => stored || ENV_DEFAULTS);
-  const [isFirstRun, setIsFirstRun] = useState<boolean>(() => !stored);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -127,22 +125,6 @@ function ConfigurationRequired() {
   ) => {
     const value = data.value.trim();
     setConfig((prev) => ({ ...prev, [field]: value }));
-    setSaved(false);
-  };
-
-  const handleUseSample = (field: keyof RuntimeConfig) => () => {
-    const sampleValues: Record<keyof RuntimeConfig, string> = {
-      tenantId: SAMPLE_DATA.tenantId,
-      clientId: SAMPLE_DATA.clientId,
-      redirectUri: SAMPLE_DATA.redirectUri,
-      apiBase: SAMPLE_DATA.apiBase
-    };
-    setConfig((prev) => ({ ...prev, [field]: sampleValues[field] }));
-    setSaved(false);
-  };
-
-  const handleFillAllSamples = () => {
-    setConfig({ ...SAMPLE_DATA });
     setSaved(false);
   };
 
@@ -160,7 +142,6 @@ function ConfigurationRequired() {
     setTimeout(() => {
       setSaving(false);
       setSaved(true);
-      setIsFirstRun(false);
       // Reload the page to reinitialize MSAL with new config
       setTimeout(() => {
         window.location.reload();
@@ -172,7 +153,6 @@ function ConfigurationRequired() {
     clearConfig();
     setConfig(ENV_DEFAULTS);
     setSaved(false);
-    setIsFirstRun(true);
   };
 
   const tenantOk = isValidGuid(config.tenantId) && !isDisallowedTenant(config.tenantId.toLowerCase());
@@ -202,24 +182,12 @@ function ConfigurationRequired() {
                   : undefined
             }
           >
-            <div className="input-with-sample">
-              <Input
-                value={config.tenantId}
-                onChange={handleInputChange("tenantId")}
-                placeholder={SAMPLE_DATA.tenantId}
-                className="config-input"
-              />
-              {isFirstRun && (
-                <Tooltip content={`Use sample: ${SAMPLE_DATA.tenantId}`} relationship="label">
-                  <Button
-                    size="small"
-                    appearance="subtle"
-                    icon={<Settings16Regular />}
-                    onClick={handleUseSample("tenantId")}
-                  />
-                </Tooltip>
-              )}
-            </div>
+            <Input
+              value={config.tenantId}
+              onChange={handleInputChange("tenantId")}
+              placeholder={PLACEHOLDER_HINTS.tenantId}
+              className="config-input"
+            />
           </Field>
 
           <Field
@@ -235,24 +203,12 @@ function ConfigurationRequired() {
                   : undefined
             }
           >
-            <div className="input-with-sample">
-              <Input
-                value={config.clientId}
-                onChange={handleInputChange("clientId")}
-                placeholder={SAMPLE_DATA.clientId}
-                className="config-input"
-              />
-              {isFirstRun && (
-                <Tooltip content={`Use sample: ${SAMPLE_DATA.clientId}`} relationship="label">
-                  <Button
-                    size="small"
-                    appearance="subtle"
-                    icon={<Settings16Regular />}
-                    onClick={handleUseSample("clientId")}
-                  />
-                </Tooltip>
-              )}
-            </div>
+            <Input
+              value={config.clientId}
+              onChange={handleInputChange("clientId")}
+              placeholder={PLACEHOLDER_HINTS.clientId}
+              className="config-input"
+            />
           </Field>
 
           <div className="advanced-toggle">
@@ -271,48 +227,24 @@ function ConfigurationRequired() {
                 label="Redirect URI"
                 hint="Must match your App Registration's redirect URI"
               >
-                <div className="input-with-sample">
-                  <Input
-                    value={config.redirectUri}
-                    onChange={handleInputChange("redirectUri")}
-                    placeholder={SAMPLE_DATA.redirectUri}
-                    className="config-input"
-                  />
-                  {isFirstRun && (
-                    <Tooltip content={`Use sample: ${SAMPLE_DATA.redirectUri}`} relationship="label">
-                      <Button
-                        size="small"
-                        appearance="subtle"
-                        icon={<Settings16Regular />}
-                        onClick={handleUseSample("redirectUri")}
-                      />
-                    </Tooltip>
-                  )}
-                </div>
+                <Input
+                  value={config.redirectUri}
+                  onChange={handleInputChange("redirectUri")}
+                  placeholder={PLACEHOLDER_HINTS.redirectUri}
+                  className="config-input"
+                />
               </Field>
 
               <Field
                 label="API Base URL"
                 hint="Eden Teams backend API endpoint (optional)"
               >
-                <div className="input-with-sample">
-                  <Input
-                    value={config.apiBase}
-                    onChange={handleInputChange("apiBase")}
-                    placeholder={SAMPLE_DATA.apiBase}
-                    className="config-input"
-                  />
-                  {isFirstRun && (
-                    <Tooltip content={`Use sample: ${SAMPLE_DATA.apiBase}`} relationship="label">
-                      <Button
-                        size="small"
-                        appearance="subtle"
-                        icon={<Settings16Regular />}
-                        onClick={handleUseSample("apiBase")}
-                      />
-                    </Tooltip>
-                  )}
-                </div>
+                <Input
+                  value={config.apiBase}
+                  onChange={handleInputChange("apiBase")}
+                  placeholder={PLACEHOLDER_HINTS.apiBase}
+                  className="config-input"
+                />
               </Field>
             </div>
           )}
@@ -343,15 +275,6 @@ function ConfigurationRequired() {
             >
               Use Env Defaults
             </Button>
-            {isFirstRun && (
-              <Button
-                appearance="secondary"
-                size="medium"
-                onClick={handleFillAllSamples}
-              >
-                Use Sample Values
-              </Button>
-            )}
           </div>
 
           <div className="config-status" aria-label="Configuration status">
