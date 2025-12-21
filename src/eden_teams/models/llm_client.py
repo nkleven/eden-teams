@@ -68,6 +68,8 @@ When analyzing call data:
             if self.use_azure:
                 from openai import AzureOpenAI
 
+                if not settings.azure_openai_api_key or not settings.azure_openai_endpoint:
+                    raise ValueError("Azure OpenAI is enabled but credentials are missing")
                 self._client = AzureOpenAI(
                     api_key=settings.azure_openai_api_key,
                     api_version=settings.azure_openai_api_version,
