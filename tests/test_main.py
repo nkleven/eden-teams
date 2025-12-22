@@ -4,8 +4,6 @@ Tests for the main module.
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from eden_teams.main import CDRAssistant
 
 

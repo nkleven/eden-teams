@@ -4,8 +4,6 @@ Tests for the LLM client module.
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from eden_teams.models.llm_client import LLMClient
 
 

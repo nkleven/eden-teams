@@ -17,7 +17,6 @@ except ImportError:
     CHROMADB_AVAILABLE = False
 
 from eden_teams.cdr.models import CallRecord
-from eden_teams.config import settings
 
 logger = logging.getLogger(__name__)
 

@@ -598,6 +598,26 @@ function DeploymentDashboard({ show }: { show: boolean }) {
     }
   }, [config.apiBase]);
 
+  useEffect(() => {
+    const updateApiStatus = async () => {
+      if (config.apiBase) {
+        try {
+          const response = await fetch(config.apiBase, { method: "HEAD", mode: "no-cors" });
+          if (response.status !== 200) {
+            setApiStatus("fail"); // ✅ Moved state update to async function
+          } else {
+            setApiStatus("ok");
+          }
+        } catch {
+          setApiStatus("fail");
+        }
+      } else {
+        setApiStatus("fail");
+      }
+    };
+    updateApiStatus();
+  }, [config.apiBase]);
+
   if (!show) return null;
 
   const items = [
