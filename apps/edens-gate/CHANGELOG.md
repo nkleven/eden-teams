@@ -4,7 +4,14 @@ All notable changes to Edens Gate will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [4.0.2] - 2025-01-18
 
+### Changed
+- 📚 Comprehensive README updates for both root repository and Edens Gate app
+- 📝 Enhanced documentation with project structure, Eden ecosystem overview, and service table
+- 🔗 Added quick reference links to all production Eden services
+- 🛠️ Improved development setup instructions
+- ✨ Better onboarding experience for new contributors
 ## [4.0.1] - 2025-12-22
 
 ### Added
