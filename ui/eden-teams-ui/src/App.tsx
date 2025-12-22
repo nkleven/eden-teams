@@ -25,6 +25,7 @@ import "./styles.css";
 const HomePage = lazy(() => import("./pages/HomePage"));
 const CallExplorerPage = lazy(() => import("./pages/CallExplorerPage"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 // Storage key for runtime config
 const CONFIG_STORAGE_KEY = "eden-teams-config";
@@ -672,6 +673,7 @@ function AuthenticatedApp() {
             <Route path="/" element={<HomePage toasterId={toasterId} />} />
             <Route path="/calls" element={<CallExplorerPage />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
       </AppShell>

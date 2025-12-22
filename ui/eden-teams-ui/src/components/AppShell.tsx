@@ -52,6 +52,9 @@ const AppShell = ({ children }: { children: ReactNode }) => {
   const { accounts } = useMsal();
   const user = accounts[0];
   const mainRef = useRef<HTMLElement | null>(null);
+  const activeTab = tabs.some((tab) => tab.value === location.pathname)
+    ? location.pathname
+    : "/";
 
   useEffect(() => {
     // Move focus to main content on route change for better SR/keyboard UX
@@ -74,7 +77,7 @@ const AppShell = ({ children }: { children: ReactNode }) => {
         </div>
         <nav aria-label="Primary navigation">
           <TabList
-            selectedValue={location.pathname}
+            selectedValue={activeTab}
             vertical
             onTabSelect={(_event: SelectTabEvent, data: SelectTabData) =>
               navigate(String(data.value))
