@@ -22,7 +22,7 @@ const useStyles = makeStyles({
   metrics: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-    ...shorthands.gap("16px"),
+    gap: "16px",
   },
   metricCard: {
     ...shorthands.padding("16px"),
